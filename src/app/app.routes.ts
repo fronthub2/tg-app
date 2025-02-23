@@ -1,15 +1,10 @@
 import { Routes } from '@angular/router';
-import { SignUpUserComponent } from './shared/sign-up-user/sign-up-user.component';
 
 export const routes: Routes = [
-  // {
-  //   path: '',
-  //   pathMatch: 'full',
-  //   redirectTo: '/signUp',
-  // },
   {
     path: '',
-    component: SignUpUserComponent,
+    pathMatch: 'full',
+    redirectTo: '/home',
   },
   {
     path: 'home',
@@ -37,6 +32,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/settings-user/settings-user.component').then(
         (c) => c.SettingsUserComponent
+      ),
+  },
+  {
+    path: 'sign-up',
+    loadComponent: () =>
+      import('./shared/sign-up-user/sign-up-user.component').then(
+        (c) => c.SignUpUserComponent
       ),
   },
   {

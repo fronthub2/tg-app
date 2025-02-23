@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+// /* You can add global styles to this file, and also import other style files */
+// // Мобильные устройства
+// $mobile: 0px; // < 576px
+// $mobile-small: 576px; // ≥ 576px
+// // Портативные устройства (планшеты)
+// $tablet: 768px; // ≥ 768px
+// // Ноутбуки
+// $laptop: 992px; // ≥ 992px
+// // Десктопы
+// $desktop: 1200px; // ≥ 1200px
+// // Большие экраны
+// $large-desktop: 1400px; // ≥ 1400px
+
+body {
+  background-color: #0b002b;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  font-family: "Quicksand", "sans-serif";
+}
+
+a {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
