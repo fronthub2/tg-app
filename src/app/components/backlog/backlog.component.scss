@@ -1,0 +1,64 @@
+:host {
+  ::-webkit-scrollbar {
+    width: 5px; /* ширина для вертикального скролла */
+    height: 3px; /* высота для горизонтального скролла */
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #24004e;
+    border-radius: 9em;
+  }
+  .wrapper {
+    display: grid;
+    grid-template-columns: 410px 980px 410px;
+    justify-content: space-between;
+    gap: 30px;
+    margin: 20px 20px;
+  }
+
+  .container {
+    // background-color: red;
+
+    &__feedback {
+      background-color: #140034;
+      padding: 0 20px 20px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+
+      overflow-y: scroll;
+      height: 93vh;
+    }
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1a003a;
+    padding: 20px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+
+    &__online {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background-color: #140034;
+      border-radius: 10px;
+    }
+
+    &__status {
+      width: 20px;
+      height: 20px;
+      background-color: greenyellow;
+      border-radius: 50%;
+    }
+
+    &__link {
+      background-color: #261647;
+      padding: 10px 15px;
+      border-radius: 10px;
+    }
+  }
+}
