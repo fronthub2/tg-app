@@ -1,0 +1,48 @@
+:host {
+  font-size: 20px;
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #140034;
+    padding: 15px 20px;
+  }
+
+  .logo {
+    font-size: 30px;
+    & span {
+      color: yellow;
+    }
+  }
+
+  .auth-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .signin {
+    background-color: #24004e;
+    padding: 10px 15px;
+    border: 1px solid #3d0072;
+    border-radius: 10px;
+  }
+
+  .signup {
+    background-color: #c000ff;
+    padding: 10px 15px;
+    border-radius: 10px;
+  }
+
+  .icon-container {
+    max-width: 30px;
+    max-height: 30px;
+    background-color: #1f083b;
+    padding: 10px 15px;
+    border-radius: 10px;
+  }
+
+  img {
+    width: 100%;
+  }
+}

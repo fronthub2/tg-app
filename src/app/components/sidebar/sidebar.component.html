@@ -1,1 +1,74 @@
-<p>sidebar works!</p>
+<div class="wrapper">
+  <a
+    routerLink="home"
+    routerLinkActive="active"
+    class="game-link game-link--home"
+  >
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/icon-home.png' }}"
+        alt="icon-home"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Home</span>
+  </a>
+  <a class="game-link game-link--casino">
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/games/icon-casino-game.png' }}"
+        alt="icon-casino-game"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Casino</span>
+  </a>
+  <a
+    routerLink="game-slots"
+    routerLinkActive="active"
+    class="game-link game-link--slots"
+  >
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/games/icon-slots-game.png' }}"
+        alt="icon-slots-game"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Slots</span>
+  </a>
+  <a class="game-link game-link--blackjack">
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/games/icon-blackjack-game.png' }}"
+        alt="icon-blackjack-game"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Blackjack</span>
+  </a>
+  <a
+    routerLink="game-mines"
+    routerLinkActive="active"
+    class="game-link game-link--mines"
+  >
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/games/icon-mines-game.png' }}"
+        alt="icon-mines-game"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Mines</span>
+  </a>
+  <a routerLink="settings-user" routerLinkActive="active" class="game-link">
+    <div class="game-link__icon-container">
+      <img
+        src="{{ 'assets/image/icon-settings.png' }}"
+        alt="icon-settings"
+        class="game-link__icon"
+      />
+    </div>
+    <span class="game-link__title">Settings</span>
+  </a>
+</div>
