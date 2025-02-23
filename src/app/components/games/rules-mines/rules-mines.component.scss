@@ -1,0 +1,31 @@
+:host {
+  font-size: 25px;
+  .game {
+    &__title {
+      text-align: center;
+      font-size: 35px;
+    }
+
+    &__content {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    &__stake {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    &__ratio {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    &__button {
+    }
+  }
+}
