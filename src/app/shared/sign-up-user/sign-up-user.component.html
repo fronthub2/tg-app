@@ -1,1 +1,59 @@
-<p>sign-up-user works!</p>
+<h2>Sign in</h2>
+
+<form class="wrapper" [formGroup]="form" (ngSubmit)="onSignUp()">
+  <div class="wrapper__container-firstname">
+    <input
+      class="wrapper__firstname"
+      type="text"
+      placeholder=""
+      formControlName="firstname"
+    />
+    <label class="wrapper__firstname-label">Введите имя</label>
+  </div>
+  <div class="wrapper__container-lastname">
+    <input
+      class="wrapper__lastname"
+      type="text"
+      formControlName="lastname"
+      placeholder=""
+    />
+    <label class="wrapper__lastname-label">Введите фамилию</label>
+  </div>
+  <div class="wrapper__container-email">
+    <input
+      class="wrapper__email"
+      type="text"
+      formControlName="email"
+      placeholder=""
+    />
+    <label class="wrapper__email-label">Введите почту</label>
+  </div>
+  <div class="wrapper__container-numberPhone">
+    <input
+      class="wrapper__numberPhone"
+      type="text"
+      formControlName="numberPhone"
+      placeholder=""
+    />
+    <label class="wrapper__numberPhone-label">Введите номер телефона</label>
+  </div>
+  <div class="wrapper__container-age">
+    <input
+      class="wrapper__age"
+      type="text"
+      formControlName="age"
+      placeholder=""
+    />
+    <label class="wrapper__age-label">Введите возраст</label>
+  </div>
+  <div class="wrapper__container-button">
+    <button
+      class="wrapper__button"
+      type="submit"
+      [disabled]="form.invalid"
+      [style.opacity]="form.invalid ? '0.7' : '1'"
+    >
+      sign up
+    </button>
+  </div>
+</form>

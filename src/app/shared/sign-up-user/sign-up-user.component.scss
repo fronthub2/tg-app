@@ -1,0 +1,93 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 600px;
+    width: 100%;
+
+    &__container {
+      &-firstname,
+      &-lastname,
+      &-email,
+      &-numberPhone,
+      &-age {
+        position: relative;
+        display: flex;
+      }
+    }
+
+    &__firstname,
+    &__lastname,
+    &__email,
+    &__numberPhone,
+    &__age {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+
+    &__firstname-label,
+    &__lastname-label,
+    &__email-label,
+    &__numberPhone-label,
+    &__age-label {
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      transition: 0.2s ease all;
+      color: #000;
+      pointer-events: none;
+      font-size: 17px;
+    }
+
+    .wrapper__firstname:focus + .wrapper__firstname-label,
+    .wrapper__firstname:not(:placeholder-shown) + .wrapper__firstname-label,
+    .wrapper__lastname:focus + .wrapper__lastname-label,
+    .wrapper__lastname:not(:placeholder-shown) + .wrapper__lastname-label,
+    .wrapper__email:focus + .wrapper__email-label,
+    .wrapper__email:not(:placeholder-shown) + .wrapper__email-label,
+    .wrapper__numberPhone:focus + .wrapper__numberPhone-label,
+    .wrapper__numberPhone:not(:placeholder-shown) + .wrapper__numberPhone-label,
+    .wrapper__age:focus + .wrapper__age-label,
+    .wrapper__age:not(:placeholder-shown) + .wrapper__age-label {
+      top: -27px;
+      left: 10px;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    &__firstname.ng-dirty.ng-invalid,
+    &__lastname.ng-dirty.ng-invalid,
+    &__email.ng-dirty.ng-invalid,
+    &__numberPhone.ng-dirty.ng-invalid,
+    &__age.ng-dirty.ng-invalid {
+      border: 2px solid red;
+    }
+    &__container-button {
+      display: flex;
+      justify-content: center;
+    }
+
+    &__button {
+      border: none;
+      background-color: #6500bd;
+      padding: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 20px;
+      color: #fff;
+    }
+  }
+}
