@@ -1,0 +1,22 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 40px);
+  justify-content: center;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cell.revealed {
+  background-color: #c500ff;
+}
+.title {
+  text-align: center;
+}

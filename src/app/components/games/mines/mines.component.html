@@ -1,1 +1,26 @@
-<p>mines works!</p>
+<h2 class="title">Mines</h2>
+<div class="board">
+  <div *ngFor="let row of board; let rowIndex = index">
+    <div
+      *ngFor="let cell of row; let colIndex = index"
+      class="cell"
+      [class.revealed]="cell.isRevealed"
+      (click)="revealCell(rowIndex, colIndex)"
+    >
+      <span *ngIf="cell.isRevealed">
+        <ng-container *ngIf="cell.isMine">💣</ng-container>
+        <ng-container *ngIf="!cell.isMine">{{
+          cell.neighboringMines > 0 ? cell.neighboringMines : ""
+        }}</ng-container>
+      </span>
+    </div>
+  </div>
+</div>
+
+@if (isShowButtonExit) {
+<ng-container>
+  <a>
+    <span>Начать заново</span>
+  </a>
+</ng-container>
+}
