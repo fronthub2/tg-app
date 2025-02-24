@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-board-games',
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  templateUrl: './board-games.component.html',
+  styleUrl: './board-games.component.scss'
 })
-export class SidebarComponent {
+export class BoardGamesComponent {
 
 }

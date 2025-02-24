@@ -1,0 +1,13 @@
+:host {
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #140034;
+    padding: 15px 20px;
+  }
+
+  .active {
+    color: #c500ff;
+  }
+}

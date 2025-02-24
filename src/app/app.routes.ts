@@ -4,38 +4,31 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/home',
+    redirectTo: '/profile',
   },
   {
-    path: 'home',
+    path: 'board-games',
     loadComponent: () =>
-      import('./components/board/board.component').then(
-        (v) => v.BoardComponent
+      import('./components/board-games/board-games.component').then(
+        (c) => c.BoardGamesComponent
       ),
   },
   {
-    path: 'game-slots',
-    loadComponent: () =>
-      import('./components/games/slots/slots.component').then(
-        (c) => c.SlotsComponent
-      ),
-  },
-  {
-    path: 'game-mines',
+    path: 'board-games/game-mines',
     loadComponent: () =>
       import('./components/games/rules-mines/rules-mines.component').then(
         (c) => c.RulesMinesComponent
       ),
   },
   {
-    path: 'game-durak',
+    path: 'board-games/game-mines/start-mines',
     loadComponent: () =>
-      import('./components/games/durak/durak.component').then(
-        (c) => c.DurakComponent
+      import('./components/games/mines/mines.component').then(
+        (c) => c.MinesComponent
       ),
   },
   {
-    path: 'settings-user',
+    path: 'profile',
     loadComponent: () =>
       import('./components/settings-user/settings-user.component').then(
         (c) => c.SettingsUserComponent

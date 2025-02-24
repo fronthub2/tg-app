@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 interface Cell {
   isMine: boolean;
@@ -9,7 +10,7 @@ interface Cell {
 
 @Component({
   selector: 'app-mines',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './mines.component.html',
   styleUrl: './mines.component.scss',
 })

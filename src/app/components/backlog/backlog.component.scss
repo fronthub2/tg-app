@@ -9,11 +9,10 @@
     border-radius: 9em;
   }
   .wrapper {
-    display: grid;
-    grid-template-columns: 410px 980px 410px;
-    justify-content: space-between;
-    gap: 30px;
-    margin: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 20px;
   }
 
   .container {

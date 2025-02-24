@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FeedbackComponent } from '../feedback/feedback.component';
-import { SidebarComponent } from '../sidebar/sidebar.component';
+import { FooterMenuComponent } from "../footer-menu/footer-menu.component";
 
 @Component({
   selector: 'app-backlog',
-  imports: [SidebarComponent, FeedbackComponent,RouterOutlet],
+  imports: [RouterOutlet, FooterMenuComponent],
   templateUrl: './backlog.component.html',
   styleUrl: './backlog.component.scss'
 })
