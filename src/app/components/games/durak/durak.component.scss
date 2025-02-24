@@ -1,0 +1,83 @@
+.game-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f8ff; /* Цвет фона стола */
+  border: 2px solid #007bff; /* Граница стола */
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.players-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 300px; /* Высота контейнера для игроков */
+  width: 100%; /* Занимает всю ширину */
+}
+
+.player-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px; /* Отступ между игроками */
+}
+
+.player-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Отступ между игроками */
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  width: 150px; /* Ширина игрока */
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #007bff; /* Граница карты */
+  border-radius: 3px;
+  background-color: #e0e0e0; /* Цвет фона карты */
+  cursor: move; /* Указатель для перетаскивания */
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #d0d0d0; /* Цвет при наведении */
+  }
+}
+
+.start-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff; /* Цвет кнопки */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3; /* Цвет кнопки при наведении */
+  }
+}

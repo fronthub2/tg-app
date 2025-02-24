@@ -1,1 +1,24 @@
-<p>durak works!</p>
+<!-- <div class="game-table">
+  <h1>Карточная игра</h1>
+  <div *ngFor="let player of gameState?.players">
+    <app-player [player]="player"></app-player>
+  </div>
+  <button (click)="startGame(100)">Начать игру с ставкой 100</button>
+</div> -->
+<div class="game-table">
+  <h1>Карточная игра "Дурак"</h1>
+
+  <div class="players-container">
+    <div class="player-top">
+      <app-player [player]="gameState.players[0]"></app-player>
+    </div>
+
+    <div class="player-bottom">
+      <app-player [player]="gameState.players[1]"></app-player>
+    </div>
+  </div>
+
+  <button class="start-button" (click)="startGame(100)">
+    Начать игру с ставкой 100
+  </button>
+</div>
