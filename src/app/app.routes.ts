@@ -28,6 +28,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'board-games/game-durak',
+    loadComponent: () =>
+      import('./components/games/durak/durak.component').then(
+        (c) => c.DurakComponent
+      ),
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./components/settings-user/settings-user.component').then(
