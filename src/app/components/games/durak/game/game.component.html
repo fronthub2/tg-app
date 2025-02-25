@@ -1,0 +1,160 @@
+<div class="game-container">
+  <div class="balance">Баланс: {{ balance.toFixed(2) }}</div>
+
+  <ng-container *ngIf="!gameStarted && !showGameEndModal; else gameContent">
+    <div class="bet-selection">
+      <h2>Выберите ставку:</h2>
+      <button class="bet-button" (click)="startGameWithBet(0.5)">0.50</button>
+      <button class="bet-button" (click)="startGameWithBet(1.0)">1.00</button>
+      <button class="bet-button" (click)="startGameWithBet(1.5)">1.50</button>
+    </div>
+  </ng-container>
+
+  <ng-template #gameContent>
+    <div class="gameplay">
+      <div class="sidebar">
+        <div class="turn-indicator">
+          {{ human.isAttacking ? "Ход игрока" : "Ход компьютера" }}
+        </div>
+        <div class="deck">
+          <ng-container *ngIf="deckCount > 0; else trumpSuitOnly">
+            <div class="card back deck-card"></div>
+            <span>Колоды: {{ deckCount }}</span>
+            <div
+              class="trump-card"
+              [ngClass]="
+                getCardClasses({ suit: trumpSuit, rank: 'A', value: 0 })
+              "
+            >
+              <span class="rank top">T</span>
+              <span class="suit">{{ getSuitSymbol(trumpSuit) }}</span>
+              <span class="rank bottom">T</span>
+            </div>
+          </ng-container>
+          <ng-template #trumpSuitOnly>
+            <div class="trump-suit-only">
+              <span class="suit">{{ getSuitSymbol(trumpSuit) }}</span>
+            </div>
+            <span>Колоды: 0</span>
+          </ng-template>
+        </div>
+        <div class="discard-pile">
+          @if (discardPile.length > 0) {
+          <div class="card back"></div>
+          }
+          <span>Отбой: {{ discardPile.length }}</span>
+        </div>
+
+        @if (!human.isAttacking) {
+        <button
+          class="take-button"
+          (click)="takeCardsToHand()"
+          [disabled]="!canEndTurn"
+        >
+          Забрать
+        </button>
+        } @else {
+        <button
+          class="discard-button"
+          (click)="endTurn()"
+          [disabled]="!canEndTurn"
+        >
+          Отбой
+        </button>
+        }
+      </div>
+
+      <div class="player player-computer">
+        <div class="cards">
+          <div
+            class="card back"
+            *ngFor="let card of computer.hand"
+            [@cardAppear]="card"
+          ></div>
+        </div>
+        @if (showComputerActionLabel) {
+        <div class="action-label">
+          {{ computerActionText }}
+        </div>
+        }
+      </div>
+
+      <div
+        class="table"
+        [class.dropzone-active]="isDragging && isDraggingOverTable"
+        (dragover)="onDragOverTable($event)"
+        (drop)="onDropTable($event)"
+        (dragenter)="onDragEnterTable($event)"
+        (dragleave)="onDragLeaveTable($event)"
+      >
+        <div class="card-pair" *ngFor="let pair of table" [@cardMove]>
+          <div class="card attack" [ngClass]="getCardClasses(pair.attack)">
+            <span class="rank top">{{ pair.attack.rank }}</span>
+            <span class="suit">{{ getSuitSymbol(pair.attack.suit) }}</span>
+            <span class="rank bottom">{{ pair.attack.rank }}</span>
+          </div>
+          @if (pair.defend) {
+          <div
+            class="card defend"
+            [ngClass]="getCardClasses(pair.defend)"
+            [@cardDefend]
+          >
+            <span class="rank top">{{ pair.defend.rank }}</span>
+            <span class="suit">{{ getSuitSymbol(pair.defend.suit) }}</span>
+            <span class="rank bottom">{{ pair.defend.rank }}</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="player player-human">
+        <div class="cards">
+          <div
+            class="card"
+            *ngFor="let card of human.hand"
+            [ngClass]="getCardClasses(card)"
+            [@cardAppear]="card"
+            [draggable]="canPlayerDrag()"
+            (dragstart)="onDragStart($event, card)"
+            (dragend)="onDragEnd($event)"
+          >
+            <span class="rank top">{{ card.rank }}</span>
+            <span class="suit">{{ getSuitSymbol(card.suit) }}</span>
+            <span class="rank bottom">{{ card.rank }}</span>
+          </div>
+        </div>
+        @if (showPlayerActionLabel) {
+        <div class="action-label">
+          {{ playerActionText }}
+        </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  @if (showModal) {
+  <div class="modal">
+    <div class="modal-content">
+      <h3>Недостаточно средств</h3>
+      <p>
+        Ваш баланс: {{ balance.toFixed(2) }}. Ставка:
+        {{ currentBet.toFixed(2) }}
+      </p>
+      <p>Пополните счет, чтобы продолжить игру:</p>
+      <button class="modal-button" (click)="topUpBalance(5)">+5.00</button>
+      <button class="modal-button" (click)="topUpBalance(10)">+10.00</button>
+      <button class="modal-button" (click)="topUpBalance(20)">+20.00</button>
+      <button class="modal-button cancel" (click)="closeModal()">Отмена</button>
+    </div>
+  </div>
+  } @if (showGameEndModal) {
+  <div class="game-end-modal">
+    <div class="modal-content">
+      <h2>{{ gameResult }}</h2>
+      <button class="modal-button" (click)="resetGame()">Новая игра</button>
+    </div>
+  </div>
+  } @if (isShowExist) {
+  <button class="exit-button" (click)="exitGame()">ВЫЙТИ</button>
+  }
+</div>
