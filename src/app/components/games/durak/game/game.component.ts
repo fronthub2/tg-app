@@ -8,12 +8,13 @@ import {
 } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Card, Player } from '../../../../interface/durak.game.interface';
 import { DurakGameService } from '../../../../services/durak.game.service';
 
 @Component({
   selector: 'app-game',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
   animations: [
@@ -88,6 +89,15 @@ export class GameComponent {
   playerActionText = '';
   computerActionText = '';
   showGameEndModal = false;
+  deckSize: '24' | '36' = '36';
+
+  private disableScroll(): void {
+    document.body.classList.add('no-scroll');
+  }
+
+  private enableScroll(): void {
+    document.body.classList.remove('no-scroll');
+  }
 
   getSuitSymbol(suit: Card['suit']): string {
     switch (suit) {
@@ -113,13 +123,17 @@ export class GameComponent {
     this.currentBet = bet;
     if (this.balance < bet) {
       this.showModal = true;
+      this.disableScroll();
       return;
     }
 
+    console.log('start', this.deckSize)
     this.balance -= bet;
-    this.gameService.initializeDeck();
+    this.gameService.initializeDeck(this.deckSize); // Передаём актуальный deckSize
+    this.table = []; // Сбрасываем стол
+    this.human = undefined as any; // Сбрасываем руки
+    this.computer = undefined as any;
     [this.human, this.computer] = this.gameService.dealCards();
-    this.table = [];
     this.gameStarted = true;
     this.showGameEndModal = false;
     this.gameResult = '';
@@ -130,21 +144,36 @@ export class GameComponent {
   topUpBalance(amount: number): void {
     this.balance += amount;
     this.showModal = false;
+    this.enableScroll(); // Включаем скроллинг при закрытии модалки
     if (this.balance >= this.currentBet) this.startGameWithBet(this.currentBet);
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.enableScroll(); // Включаем скроллинг при закрытии модалки
     this.currentBet = 0;
+  }
+
+  closeModalOnBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
   }
 
   resetGame(): void {
     this.gameStarted = false;
     this.showGameEndModal = false;
+    this.enableScroll(); // Включаем скроллинг при закрытии модалки конца игры
     this.gameResult = '';
     this.currentBet = 0;
     this.showPlayerActionLabel = false;
     this.showComputerActionLabel = false;
+  }
+
+  closeGameEndModalOnBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.resetGame();
+    }
   }
 
   exitGame(): void {
@@ -277,7 +306,7 @@ export class GameComponent {
     this.human.isAttacking = false;
     this.computer.isAttacking = true;
     this.gameService.computerAttack(this.computer, this.human, this.table);
-    this.canEndTurn = true; 
+    this.canEndTurn = true;
     this.checkGameEnd();
   }
 
@@ -327,6 +356,7 @@ export class GameComponent {
         }
         if (this.balance <= 0) this.gameResult += ' У вас закончились деньги!';
         this.showGameEndModal = true;
+        this.disableScroll(); // Отключаем скроллинг при открытии модалки конца игры
       }, 1000);
     }
   }
@@ -339,5 +369,3 @@ export class GameComponent {
 Логика хода компьютера и завершения игры делегирована сервису.
 Исправлены ошибки в getCardClasses и canPlayerDrag.
 */
-
-//добавить при модалке overflow hidden

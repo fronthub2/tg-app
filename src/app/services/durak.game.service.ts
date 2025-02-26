@@ -1,34 +1,40 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Card, Player } from '../interface/durak.game.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DurakGameService {
+export class DurakGameService implements OnInit {
   private suits = ['hearts', 'diamonds', 'clubs', 'spades'] as const;
-  private ranks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'] as const;
+  private fullRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'] as const;
+  private shortRanks = ['9', '10', 'J', 'Q', 'K', 'A'] as const;
   private deck: Card[] = [];
   private trumpSuit!: Card['suit'];
+  private trumpCard!: Card;
   private discardPile: Card[] = [];
+  private isFirstTurnCompleted = false; // Флаг для отслеживания первого отбоя
 
-  constructor() {
-    this.initializeDeck();
+  ngOnInit(): void {
+    this.initializeDeck(); // По умолчанию 36 карт
   }
 
-  // Инициализация колоды
-  initializeDeck(): void {
+  initializeDeck(deckSize: '24' | '36' = '36'): void {
     this.deck = [];
+    console.log(deckSize)
+    const ranks = deckSize === '36' ? this.fullRanks : this.shortRanks;
     for (const suit of this.suits) {
-      for (const rank of this.ranks) {
-        this.deck.push({ suit, rank, value: this.ranks.indexOf(rank) + 6 });
+      for (const rank of ranks) {
+        this.deck.push({ suit, rank, value: this.fullRanks.indexOf(rank) + 6 });
       }
     }
     this.shuffleDeck();
-    this.trumpSuit = this.deck[this.deck.length - 1].suit;
+    const randomIndex = Math.floor(Math.random() * this.deck.length);
+    this.trumpCard = this.deck[randomIndex];
+    this.trumpSuit = this.trumpCard.suit;
     this.discardPile = [];
+    this.isFirstTurnCompleted = false; // Сбрасываем флаг при новой игре
   }
 
-  // Тасование колоды
   shuffleDeck(): void {
     for (let i = this.deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -36,14 +42,12 @@ export class DurakGameService {
     }
   }
 
-  // Раздача карт
   dealCards(): [Player, Player] {
     const player1 = { hand: this.deck.splice(0, 6), isAttacking: true };
     const player2 = { hand: this.deck.splice(0, 6), isAttacking: false };
     return [player1, player2];
   }
 
-  // Проверка, может ли карта побить другую
   canBeat(attackCard: Card, defendCard: Card): boolean {
     if (attackCard.suit === defendCard.suit) {
       return defendCard.value > attackCard.value;
@@ -53,12 +57,16 @@ export class DurakGameService {
     );
   }
 
-  // Геттеры для доступа к приватным свойствам
   getTrumpSuit(): Card['suit'] {
     return this.trumpSuit;
   }
 
+  getTrumpCard(): Card {
+    return { ...this.trumpCard };
+  }
+
   getDeckCount(): number {
+    console.log('getCount', this.deck.length);
     return this.deck.length;
   }
 
@@ -66,29 +74,16 @@ export class DurakGameService {
     return [...this.discardPile];
   }
 
-  // Извлечение карты из колоды
   drawCard(): Card | undefined {
     return this.deck.shift();
   }
 
-  // Пополнение руки игрока
   refillHand(player: Player, maxCards: number = 6): void {
     while (player.hand.length < maxCards && this.deck.length > 0) {
       player.hand.push(this.drawCard()!);
     }
   }
 
-  // Проверка, можно ли атаковать ещё
-  // canAttackMore(
-  //   player: Player,
-  //   table: { attack: Card; defend?: Card }[]
-  // ): boolean {
-  //   if (table.length === 0) return true;
-  //   const tableRanks = table.flatMap((pair) =>
-  //     [pair.attack.rank, pair.defend?.rank].filter(Boolean)
-  //   );
-  //   return player.hand.some((card) => tableRanks.includes(card.rank));
-  // }
   canAttackMore(
     player: Player,
     opponent: Player,
@@ -98,34 +93,33 @@ export class DurakGameService {
     const tableRanks = table.flatMap((pair) =>
       [pair.attack.rank, pair.defend?.rank].filter(Boolean)
     );
-    return (
-      player.hand.some((card) => tableRanks.includes(card.rank)) &&
-      table.length < opponent.hand.length
+    const hasMatchingRank = player.hand.some((card) =>
+      tableRanks.includes(card.rank)
     );
+    // До первого отбоя лимит 3 карты, после — зависит от количества карт соперника
+    const maxAttacks = this.isFirstTurnCompleted ? opponent.hand.length : 3;
+    return hasMatchingRank && table.length < maxAttacks;
   }
 
-  // Завершение хода (отбой)
   endTurn(table: { attack: Card; defend?: Card }[]): void {
     this.discardPile.push(...table.map((pair) => pair.attack));
     this.discardPile.push(...table.map((pair) => pair.defend!).filter(Boolean));
-    table.length = 0; // Очищаем стол
+    table.length = 0;
+    this.isFirstTurnCompleted = true; // Устанавливаем флаг после первого отбоя
   }
 
-  // Взятие карт в руку
   takeCards(player: Player, table: { attack: Card; defend?: Card }[]): void {
     player.hand.push(...table.map((pair) => pair.attack));
     player.hand.push(...table.map((pair) => pair.defend!).filter(Boolean));
-    table.length = 0; // Очищаем стол
+    table.length = 0;
   }
 
-  // Проверка окончания игры
   checkGameEnd(human: Player, computer: Player): 'human' | 'computer' | null {
     if (human.hand.length === 0) return 'human';
     if (computer.hand.length === 0) return 'computer';
     return null;
   }
 
-  // Логика атаки компьютера
   computerAttack(
     computer: Player,
     human: Player,
@@ -157,13 +151,13 @@ export class DurakGameService {
       }
     }
 
-    if (attackCard && table.length < human.hand.length) {
+    const maxAttacks = this.isFirstTurnCompleted ? human.hand.length : 3;
+    if (attackCard && table.length < maxAttacks) {
       table.push({ attack: attackCard });
       computer.hand = computer.hand.filter((c) => c !== attackCard);
     }
   }
 
-  // Логика защиты компьютера
   computerDefend(
     computer: Player,
     table: { attack: Card; defend?: Card }[]

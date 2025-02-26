@@ -3,10 +3,15 @@
 
   <ng-container *ngIf="!gameStarted && !showGameEndModal; else gameContent">
     <div class="bet-selection">
+      <h2>Выберите количество карт:</h2>
+      <select [(ngModel)]="deckSize" class="deck-size-select">
+        <option value="36">36 карт (классический)</option>
+        <option value="24">24 карты (укороченный)</option>
+      </select>
       <h2>Выберите ставку:</h2>
-      <button class="bet-button" (click)="startGameWithBet(0.5)">0.50</button>
-      <button class="bet-button" (click)="startGameWithBet(1.0)">1.00</button>
-      <button class="bet-button" (click)="startGameWithBet(1.5)">1.50</button>
+      <button class="bet-button" (click)="startGameWithBet(0.50)">0.50</button>
+      <button class="bet-button" (click)="startGameWithBet(1.00)">1.00</button>
+      <button class="bet-button" (click)="startGameWithBet(1.50)">1.50</button>
     </div>
   </ng-container>
 
@@ -17,33 +22,19 @@
           {{ human.isAttacking ? "Ход игрока" : "Ход компьютера" }}
         </div>
         <div class="deck">
-          <ng-container
-            *ngIf="gameService.getDeckCount() > 0; else trumpSuitOnly"
-          >
+          <ng-container *ngIf="gameService.getDeckCount() > 0; else trumpSuitOnly">
             <div class="card back deck-card"></div>
-            <span>Колоды: {{ gameService.getDeckCount() }}</span>
-            <div
-              class="trump-card"
-              [ngClass]="
-                getCardClasses({
-                  suit: gameService.getTrumpSuit(),
-                  rank: 'A',
-                  value: 0
-                })
-              "
-            >
-              <span class="rank top">T</span>
-              <span class="suit">{{
-                getSuitSymbol(gameService.getTrumpSuit())
-              }}</span>
-              <span class="rank bottom">T</span>
+            <span>Колоды: {{gameService.getDeckCount()}}</span>
+            <div class="trump-card" 
+                 [ngClass]="getCardClasses(gameService.getTrumpCard())">
+              <span class="rank top">{{gameService.getTrumpCard().rank}}</span>
+              <span class="suit">{{getSuitSymbol(gameService.getTrumpCard().suit)}}</span>
+              <span class="rank bottom">{{gameService.getTrumpCard().rank}}</span>
             </div>
           </ng-container>
           <ng-template #trumpSuitOnly>
             <div class="trump-suit-only">
-              <span class="suit">{{
-                getSuitSymbol(gameService.getTrumpSuit())
-              }}</span>
+              <span class="suit">{{getSuitSymbol(gameService.getTrumpSuit())}}</span>
             </div>
             <span>Колоды: 0</span>
           </ng-template>
@@ -135,7 +126,7 @@
     </div>
   </ng-template>
 
-  <div class="modal" *ngIf="showModal">
+  <div class="modal" *ngIf="showModal" (click)="closeModalOnBackdrop($event)">
     <div class="modal-content">
       <h3>Недостаточно средств</h3>
       <p>
@@ -150,7 +141,11 @@
     </div>
   </div>
 
-  <div class="game-end-modal" *ngIf="showGameEndModal">
+  <div
+    class="game-end-modal"
+    *ngIf="showGameEndModal"
+    (click)="closeGameEndModalOnBackdrop($event)"
+  >
     <div class="modal-content">
       <h2>{{ gameResult }}</h2>
       <button class="modal-button" (click)="resetGame()">Новая игра</button>
