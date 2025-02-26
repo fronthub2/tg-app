@@ -5,21 +5,21 @@
       src="{{ 'assets/image/icon-user.png' }}"
       alt="icon-user"
     />
-    <div class="user-profile__name">Имя: Jkl</div>
+    <div class="user-profile__name">{{user.firstname}}</div>
   </div>
   <div class="user-stats">
     <div class="user-stats__balance">
-      Игровой баланс: <span class="user-stats__amount">$1</span>
+      Игровой баланс: <span class="user-stats__amount">{{user.balance}} $</span>
     </div>
     <div class="user-stats__details">
       <div class="user-stats__games">
-        Игр: <span class="user-stats__count">1</span>
+        Игр: <span class="user-stats__count">{{user.games}}</span>
       </div>
       <div class="user-stats__wins">
-        Побед: <span class="user-stats__count">1</span>
+        Побед: <span class="user-stats__count">{{user.wins}}</span>
       </div>
       <div class="user-stats__earnings">
-        Заработок: <span class="user-stats__amount">1 $</span>
+        Заработок: <span class="user-stats__amount">{{user.balance}} $</span>
       </div>
     </div>
     <div class="user-actions">

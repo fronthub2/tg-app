@@ -42,13 +42,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'sign-up',
-    loadComponent: () =>
-      import('./shared/sign-up-user/sign-up-user.component').then(
-        (c) => c.SignUpUserComponent
-      ),
-  },
-  {
     path: 'cash-in',
     loadComponent: () =>
       import('./components/cash-in/cash-in.component').then(

@@ -7,31 +7,27 @@ import { LocalStorageService } from './local-storage.service';
   providedIn: 'root',
 })
 export class UserService {
-  LocalStorageService = inject(LocalStorageService);
-  userBSubject!: BehaviorSubject<IUser>;
+  lsService = inject(LocalStorageService);
+  userBSubject!: BehaviorSubject<IUser[]>;
   key = 'user';
 
   constructor() {
-    const tasksLocalStorage =
-      this.LocalStorageService.getLocalStorage(this.key) || [];
-    this.userBSubject = new BehaviorSubject<IUser>(tasksLocalStorage);
+    const getLS = this.lsService.getLocalStorage(this.key);
+    this.userBSubject = new BehaviorSubject<IUser[]>(getLS);
+    console.log('user', this.userBSubject.getValue());
+    console.log(getLS);
   }
 
-  getUserInfo(): Observable<IUser> {
+  getUserInfo(): Observable<IUser[]> {
     return this.userBSubject.asObservable();
   }
 
-  signUpUser(userInfo: IUser) {
-    this.userBSubject.next(userInfo);
-    console.log('регистрация', this.userBSubject.getValue());
-  }
-
-  signInUser(userInfo: IUser) {
-    this.userBSubject.next(userInfo);
-    console.log('вошел:', this.userBSubject.getValue());
+  updateUserInfo(user: IUser[]) {
+    this.userBSubject.next(user);
+    console.log('userBS', this.userBSubject.getValue());
   }
 
   saveInLocalStorage(key: string): void {
-    this.LocalStorageService.setLocalStorage(key, this.userBSubject);
+    this.lsService.setLocalStorage(key, this.userBSubject);
   }
 }

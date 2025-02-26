@@ -21,7 +21,9 @@
     gap: 20px;
   }
 
-  .signin {
+  .icon-container {
+    max-width: 30px;
+    max-height: 30px;
     background-color: #24004e;
     padding: 10px 15px;
     border: 1px solid #3d0072;
@@ -32,26 +34,6 @@
       background-color: #3d0072;
       transition: 350ms;
     }
-  }
-
-  .signup {
-    background-color: #c000ff;
-    padding: 10px 15px;
-    border-radius: 10px;
-    transition: 350ms;
-
-    &:hover {
-      background-color: #bf00ffc1;
-      transition: 350ms;
-    }
-  }
-
-  .icon-container {
-    max-width: 30px;
-    max-height: 30px;
-    background-color: #1f083b;
-    padding: 10px 15px;
-    border-radius: 10px;
   }
 
   img {
