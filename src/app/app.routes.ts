@@ -7,6 +7,13 @@ export const routes: Routes = [
     redirectTo: '/profile',
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (c) => c.ProfileComponent
+      ),
+  },
+  {
     path: 'board-games',
     loadComponent: () =>
       import('./components/board-games/board-games.component').then(
@@ -30,15 +37,8 @@ export const routes: Routes = [
   {
     path: 'board-games/game-durak',
     loadComponent: () =>
-      import('./components/games/durak/durak.component').then(
-        (c) => c.DurakComponent
-      ),
-  },
-  {
-    path: 'profile',
-    loadComponent: () =>
-      import('./components/settings-user/settings-user.component').then(
-        (c) => c.SettingsUserComponent
+      import('./components/games/durak/game/game.component').then(
+        (c) => c.GameComponent
       ),
   },
   {
@@ -47,6 +47,17 @@ export const routes: Routes = [
       import('./shared/sign-up-user/sign-up-user.component').then(
         (c) => c.SignUpUserComponent
       ),
+  },
+  {
+    path: 'cash-in',
+    loadComponent: () =>
+      import('./components/cash-in/cash-in.component').then(
+        (c) => c.CashInComponent
+      ),
+  },
+  {
+    path: 'profile/cash-in',
+    redirectTo: '/cash-in',
   },
   {
     path: '404',

@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { FooterMenuComponent } from "../footer-menu/footer-menu.component";
 
 @Component({
   selector: 'app-backlog',
-  imports: [RouterOutlet, FooterMenuComponent],
+  imports: [],
   templateUrl: './backlog.component.html',
   styleUrl: './backlog.component.scss'
 })

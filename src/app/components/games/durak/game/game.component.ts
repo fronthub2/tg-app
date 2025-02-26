@@ -1,35 +1,25 @@
-import {
-  animate,
-  keyframes,
-  sequence,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Card, Player } from '../../../../interface/durak.game.interface';
 import { DurakGameService } from '../../../../services/durak.game.service';
+import { PlayerCardsComponent } from '../player-cards/player-cards.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { BetSelectionComponent } from '../bet-selection/bet-selection.component';
 
 @Component({
   selector: 'app-game',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PlayerCardsComponent,
+    SidebarComponent,
+    BetSelectionComponent,
+  ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
   animations: [
-    trigger('cardAppear', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.5)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' })),
-      ]),
-      transition(':leave', [
-        animate(
-          '300ms ease-in',
-          style({ opacity: 0, transform: 'scale(0.5)' })
-        ),
-      ]),
-    ]),
     trigger('cardMove', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(100px)' }),
@@ -41,31 +31,17 @@ import { DurakGameService } from '../../../../services/durak.game.service';
       transition(':leave', [
         animate(
           '400ms ease-in',
-          keyframes([
-            style({ opacity: 1, transform: 'translateY(0)', offset: 0 }),
-            style({
-              opacity: 0.5,
-              transform: 'translateX(-200px) rotate(-30deg)',
-              offset: 0.7,
-            }),
-            style({
-              opacity: 0,
-              transform: 'translateX(-300px) rotate(-45deg)',
-              offset: 1,
-            }),
-          ])
+          style({ opacity: 0, transform: 'translateX(-300px) rotate(-45deg)' })
         ),
       ]),
     ]),
     trigger('cardDefend', [
       transition(':enter', [
-        sequence([
-          style({ opacity: 0, transform: 'translateY(100px) rotate(0deg)' }),
-          animate(
-            '200ms',
-            style({ opacity: 1, transform: 'translateY(-20px) rotate(15deg)' })
-          ),
-        ]),
+        style({ opacity: 0, transform: 'translateY(100px)' }),
+        animate(
+          '200ms',
+          style({ opacity: 1, transform: 'translateY(-20px) rotate(15deg)' })
+        ),
       ]),
     ]),
   ],
@@ -73,143 +49,120 @@ import { DurakGameService } from '../../../../services/durak.game.service';
 export class GameComponent {
   gameService = inject(DurakGameService);
 
-  human!: Player;
-  computer!: Player;
-  table: { attack: Card; defend?: Card }[] = [];
-  gameStarted = false;
-  gameResult = '';
-  canEndTurn = false;
+  human = signal<Player | undefined>(undefined);
+  computer = signal<Player | undefined>(undefined);
+  table = signal<{ attack: Card; defend?: Card }[]>([]);
+  gameStarted = signal(false);
+  gameResult = signal('');
+  canEndTurn = signal(false);
   balance = 10.0;
-  currentBet = 0;
-  showModal = false;
-  isDragging = false;
-  isDraggingOverTable = false;
-  showPlayerActionLabel = false;
-  showComputerActionLabel = false;
-  playerActionText = '';
-  computerActionText = '';
-  showGameEndModal = false;
-  deckSize: '24' | '36' = '36';
-
-  private disableScroll(): void {
-    document.body.classList.add('no-scroll');
-  }
-
-  private enableScroll(): void {
-    document.body.classList.remove('no-scroll');
-  }
+  currentBet = signal(0);
+  showModal = signal(false);
+  isDragging = signal(false);
+  isDraggingOverTable = signal(false);
+  showPlayerActionLabel = signal(false);
+  showComputerActionLabel = signal(false);
+  playerActionText = signal('');
+  computerActionText = signal('');
+  showGameEndModal = signal(false);
 
   getSuitSymbol(suit: Card['suit']): string {
-    switch (suit) {
-      case 'hearts':
-        return '♥️';
-      case 'diamonds':
-        return '♦️';
-      case 'clubs':
-        return '♣️';
-      case 'spades':
-        return '♠️';
-    }
+    return (
+      { hearts: '♥️', diamonds: '♦️', clubs: '♣️', spades: '♠️' }[suit] || ''
+    );
   }
 
   getCardClasses(card: Card): string[] {
     return [
       'card',
-      card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black',
+      ['hearts', 'diamonds'].includes(card.suit) ? 'red' : 'black',
     ];
   }
 
-  startGameWithBet(bet: number): void {
-    this.currentBet = bet;
-    if (this.balance < bet) {
-      this.showModal = true;
-      this.disableScroll();
-      return;
-    }
-
-    console.log('start', this.deckSize)
+  startGameWithBet({
+    bet,
+    deckSize,
+  }: {
+    bet: number;
+    deckSize: '24' | '36';
+  }): void {
+    // Обновляем тип аргумента
+    this.currentBet.set(bet);
+    if (this.balance < bet) return this.showModalWithScrollLock();
     this.balance -= bet;
-    this.gameService.initializeDeck(this.deckSize); // Передаём актуальный deckSize
-    this.table = []; // Сбрасываем стол
-    this.human = undefined as any; // Сбрасываем руки
-    this.computer = undefined as any;
-    [this.human, this.computer] = this.gameService.dealCards();
-    this.gameStarted = true;
-    this.showGameEndModal = false;
-    this.gameResult = '';
-    this.canEndTurn = false;
-    if (!this.human.isAttacking) setTimeout(() => this.computerAttack(), 1000);
+    this.gameService.initializeDeck(deckSize);
+    const [human, computer] = this.gameService.dealCards();
+    this.human.set(human);
+    this.computer.set(computer);
+    this.table.set([]);
+    this.gameStarted.set(true);
+    this.showGameEndModal.set(false);
+    this.gameResult.set('');
+    this.canEndTurn.set(false);
+    if (!human.isAttacking) this.delayedComputerAttack();
   }
 
   topUpBalance(amount: number): void {
     this.balance += amount;
-    this.showModal = false;
-    this.enableScroll(); // Включаем скроллинг при закрытии модалки
-    if (this.balance >= this.currentBet) this.startGameWithBet(this.currentBet);
+    this.closeModal();
+    if (this.balance >= this.currentBet())
+      this.startGameWithBet({ bet: this.currentBet(), deckSize: '36' }); // Указываем дефолтный deckSize
   }
 
   closeModal(): void {
-    this.showModal = false;
-    this.enableScroll(); // Включаем скроллинг при закрытии модалки
-    this.currentBet = 0;
+    this.showModal.set(false);
+    this.enableScroll();
+    this.currentBet.set(0);
   }
 
   closeModalOnBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      this.closeModal();
-    }
+    if (event.target === event.currentTarget) this.closeModal();
   }
 
   resetGame(): void {
-    this.gameStarted = false;
-    this.showGameEndModal = false;
-    this.enableScroll(); // Включаем скроллинг при закрытии модалки конца игры
-    this.gameResult = '';
-    this.currentBet = 0;
-    this.showPlayerActionLabel = false;
-    this.showComputerActionLabel = false;
+    this.gameStarted.set(false);
+    this.showGameEndModal.set(false);
+    this.enableScroll();
+    this.gameResult.set('');
+    this.currentBet.set(0);
+    this.showPlayerActionLabel.set(false);
+    this.showComputerActionLabel.set(false);
   }
 
   closeGameEndModalOnBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      this.resetGame();
-    }
+    if (event.target === event.currentTarget) this.resetGame();
   }
 
   exitGame(): void {
-    this.gameStarted = false;
-    this.showGameEndModal = false;
-    this.gameResult = '';
-    this.table = [];
-    this.canEndTurn = false;
+    this.gameStarted.set(false);
+    this.showGameEndModal.set(false);
+    this.gameResult.set('');
+    this.table.set([]);
+    this.canEndTurn.set(false);
   }
 
   canPlayerDrag(): boolean {
-    return (
-      this.human.isAttacking ||
-      (!this.human.isAttacking &&
-        this.table.length > 0 &&
-        !this.table[this.table.length - 1].defend)
-    );
+    const human = this.human();
+    return human
+      ? human.isAttacking ||
+          (this.table().length > 0 &&
+            !this.table()[this.table().length - 1].defend)
+      : false;
   }
 
   onDragStart(event: DragEvent, card: Card): void {
-    if (!this.canPlayerDrag()) {
-      event.preventDefault();
-      return;
-    }
-    this.isDragging = true;
+    if (!this.canPlayerDrag()) return event.preventDefault();
+    this.isDragging.set(true);
     event.dataTransfer!.setData('text/plain', JSON.stringify(card));
-    const dragImage = event.target as HTMLElement;
-    dragImage.style.opacity = '0.5';
-    event.dataTransfer!.setDragImage(dragImage, 40, 60);
+    const target = event.target as HTMLElement;
+    target.style.opacity = '0.5';
+    event.dataTransfer!.setDragImage(target, 40, 60);
   }
 
   onDragEnd(event: DragEvent): void {
-    this.isDragging = false;
-    this.isDraggingOverTable = false;
-    const dragImage = event.target as HTMLElement;
-    dragImage.style.opacity = '1';
+    this.isDragging.set(false);
+    this.isDraggingOverTable.set(false);
+    (event.target as HTMLElement).style.opacity = '1';
   }
 
   onDragOverTable(event: DragEvent): void {
@@ -217,148 +170,211 @@ export class GameComponent {
   }
 
   onDragEnterTable(event: DragEvent): void {
-    if (this.canPlayerDrag()) this.isDraggingOverTable = true;
+    if (this.canPlayerDrag()) this.isDraggingOverTable.set(true);
   }
 
   onDragLeaveTable(event: DragEvent): void {
-    this.isDraggingOverTable = false;
+    this.isDraggingOverTable.set(false);
   }
 
   onDropTable(event: DragEvent): void {
     if (!this.canPlayerDrag()) return;
     event.preventDefault();
-    this.isDragging = false;
-    this.isDraggingOverTable = false;
+    this.isDragging.set(false);
+    this.isDraggingOverTable.set(false);
     const cardData = event.dataTransfer!.getData('text/plain');
     if (cardData) this.playCard(JSON.parse(cardData));
   }
 
   playCard(card: Card): void {
-    const cardInHand = this.human.hand.find(
+    const human = this.human();
+    if (!human) return;
+    const cardInHand = human.hand.find(
       (c) => c.suit === card.suit && c.rank === card.rank
     );
     if (!cardInHand) return;
 
-    if (this.human.isAttacking) {
+    if (human.isAttacking) {
       if (
-        this.gameService.canAttackMore(this.human, this.computer, this.table)
-      ) {
-        this.table.push({ attack: cardInHand });
-        this.human.hand = this.human.hand.filter((c) => c !== cardInHand);
-        this.canEndTurn = false;
-        setTimeout(() => this.computerDefend(), 1000);
-      }
+        !this.gameService.canAttackMore(human, this.computer()!, this.table())
+      )
+        return;
+      this.table.update((t) => [...t, { attack: cardInHand }]);
+      human.hand = human.hand.filter((c) => c !== cardInHand);
+      this.canEndTurn.set(false);
+      setTimeout(() => this.computerDefend(), 1000);
     } else if (
-      this.table.length > 0 &&
-      !this.table[this.table.length - 1].defend
+      this.table().length > 0 &&
+      !this.table()[this.table().length - 1].defend
     ) {
-      const attackCard = this.table[this.table.length - 1].attack;
-      if (this.gameService.canBeat(attackCard, cardInHand)) {
-        this.table[this.table.length - 1].defend = cardInHand;
-        this.human.hand = this.human.hand.filter((c) => c !== cardInHand);
-        this.canEndTurn = false;
-        setTimeout(() => this.computerContinue(), 1000);
-      }
+      const attackCard = this.table()[this.table().length - 1].attack;
+      if (!this.gameService.canBeat(attackCard, cardInHand)) return;
+      this.table.update((t) => {
+        t[t.length - 1].defend = cardInHand;
+        return [...t];
+      });
+      human.hand = human.hand.filter((c) => c !== cardInHand);
+      this.canEndTurn.set(false);
+      setTimeout(() => this.computerContinue(), 1000);
     }
     this.checkGameEnd();
   }
 
   computerDefend(): void {
-    if (this.gameService.computerDefend(this.computer, this.table)) {
-      this.canEndTurn = true;
+    if (this.gameService.computerDefend(this.computer()!, this.table())) {
+      this.canEndTurn.set(true);
     } else {
-      this.gameService.takeCards(this.computer, this.table);
-      this.human.isAttacking = true;
-      this.computer.isAttacking = false;
-      this.canEndTurn = false;
-      this.gameService.refillHand(this.human);
-      this.gameService.refillHand(this.computer);
-      this.showComputerActionLabel = true;
-      this.computerActionText = 'Забрал';
-      setTimeout(() => (this.showComputerActionLabel = false), 1000);
+      this.handleComputerTake();
     }
     this.checkGameEnd();
   }
 
   computerContinue(): void {
-    const isDefended = this.table.every((pair) => !!pair.defend);
-    if (isDefended) {
-      if (
-        this.gameService.canAttackMore(this.computer, this.human, this.table)
-      ) {
-        setTimeout(() => this.computerAttack(), 1000);
-      } else {
-        this.gameService.endTurn(this.table);
-        this.human.isAttacking = true;
-        this.computer.isAttacking = false;
-        this.canEndTurn = false;
-        this.gameService.refillHand(this.human);
-        this.gameService.refillHand(this.computer);
-        this.showComputerActionLabel = true;
-        this.computerActionText = 'Отбой';
-        setTimeout(() => (this.showComputerActionLabel = false), 1000);
-        this.checkGameEnd();
-      }
+    if (!this.table().every((pair) => pair.defend)) return;
+    if (
+      this.gameService.canAttackMore(
+        this.computer()!,
+        this.human()!,
+        this.table()
+      )
+    ) {
+      setTimeout(() => this.computerAttack(), 1000);
+    } else {
+      this.handleComputerEndTurn();
     }
   }
 
   computerAttack(): void {
-    this.human.isAttacking = false;
-    this.computer.isAttacking = true;
-    this.gameService.computerAttack(this.computer, this.human, this.table);
-    this.canEndTurn = true;
+    this.human.update((h) => {
+      if (h) h.isAttacking = false;
+      return h;
+    });
+    this.computer.update((c) => {
+      if (c) c.isAttacking = true;
+      return c;
+    });
+    this.gameService.computerAttack(
+      this.computer()!,
+      this.human()!,
+      this.table()
+    );
+    this.canEndTurn.set(true);
     this.checkGameEnd();
   }
 
   takeCardsToHand(): void {
-    if (!this.canEndTurn || this.human.isAttacking) return;
-    this.gameService.takeCards(this.human, this.table);
-    this.human.isAttacking = false;
-    this.computer.isAttacking = true;
-    this.canEndTurn = false;
-    this.gameService.refillHand(this.human);
-    this.gameService.refillHand(this.computer);
-    this.showPlayerActionLabel = true;
-    this.playerActionText = 'Забрал';
-    setTimeout(() => {
-      this.showPlayerActionLabel = false;
-      this.computerAttack();
-    }, 1000);
-    this.checkGameEnd();
+    if (!this.canEndTurn() || this.human()?.isAttacking) return;
+    this.gameService.takeCards(this.human()!, this.table());
+    this.switchTurnToComputer();
+    this.showAction('Забрал', 'player', () => this.computerAttack());
   }
 
   endTurn(): void {
-    if (!this.canEndTurn || !this.human.isAttacking) return;
-    this.gameService.endTurn(this.table);
-    this.human.isAttacking = false;
-    this.computer.isAttacking = true;
-    this.canEndTurn = false;
-    this.gameService.refillHand(this.human);
-    this.gameService.refillHand(this.computer);
-    this.showPlayerActionLabel = true;
-    this.playerActionText = 'Отбой';
-    setTimeout(() => {
-      this.showPlayerActionLabel = false;
-      this.computerAttack();
-    }, 1000);
-    this.checkGameEnd();
+    if (!this.canEndTurn() || !this.human()?.isAttacking) return;
+    this.gameService.endTurn(this.table());
+    this.switchTurnToComputer();
+    this.showAction('Отбой', 'player', () => this.computerAttack());
   }
 
   checkGameEnd(): void {
-    const result = this.gameService.checkGameEnd(this.human, this.computer);
-    if (result) {
-      setTimeout(() => {
-        if (result === 'human') {
-          this.gameResult = 'Вы победили!';
-          this.balance += this.currentBet * 2;
-        } else {
-          this.gameResult = 'Компьютер победил! Вы - дурак!';
-        }
-        if (this.balance <= 0) this.gameResult += ' У вас закончились деньги!';
-        this.showGameEndModal = true;
-        this.disableScroll(); // Отключаем скроллинг при открытии модалки конца игры
-      }, 1000);
+    const result = this.gameService.checkGameEnd(
+      this.human()!,
+      this.computer()!
+    );
+    if (!result) return;
+    setTimeout(() => {
+      this.gameResult.set(
+        result === 'human'
+          ? 'Вы победили!' + ((this.balance += this.currentBet() * 2), '')
+          : 'Компьютер победил! Вы - дурак!'
+      );
+      if (this.balance <= 0)
+        this.gameResult.update((r) => r + ' У вас закончились деньги!');
+      this.showGameEndModal.set(true);
+      this.disableScroll();
+    }, 1000);
+  }
+
+  private showModalWithScrollLock(): void {
+    this.showModal.set(true);
+    this.disableScroll();
+  }
+
+  private switchTurnToComputer(): void {
+    this.human.update((h) => {
+      if (h) h.isAttacking = false;
+      return h;
+    });
+    this.computer.update((c) => {
+      if (c) c.isAttacking = true;
+      return c;
+    });
+    this.canEndTurn.set(false);
+    this.gameService.refillHand(this.human()!);
+    this.gameService.refillHand(this.computer()!);
+  }
+
+  private showAction(
+    text: string,
+    type: 'player' | 'computer',
+    callback: () => void
+  ): void {
+    if (type === 'player') {
+      this.showPlayerActionLabel.set(true);
+      this.playerActionText.set(text);
+    } else {
+      this.showComputerActionLabel.set(true);
+      this.computerActionText.set(text);
     }
+    setTimeout(() => {
+      if (type === 'player') this.showPlayerActionLabel.set(false);
+      else this.showComputerActionLabel.set(false);
+      callback();
+    }, 1000);
+  }
+
+  private handleComputerTake(): void {
+    this.gameService.takeCards(this.computer()!, this.table());
+    this.human.update((h) => {
+      if (h) h.isAttacking = true;
+      return h;
+    });
+    this.computer.update((c) => {
+      if (c) c.isAttacking = false;
+      return c;
+    });
+    this.canEndTurn.set(false);
+    this.gameService.refillHand(this.human()!);
+    this.gameService.refillHand(this.computer()!);
+    this.showAction('Забрал', 'computer', () => {});
+  }
+
+  private handleComputerEndTurn(): void {
+    this.gameService.endTurn(this.table());
+    this.human.update((h) => {
+      if (h) h.isAttacking = true;
+      return h;
+    });
+    this.computer.update((c) => {
+      if (c) c.isAttacking = false;
+      return c;
+    });
+    this.canEndTurn.set(false);
+    this.gameService.refillHand(this.human()!);
+    this.gameService.refillHand(this.computer()!);
+    this.showAction('Отбой', 'computer', this.checkGameEnd.bind(this));
+  }
+
+  private delayedComputerAttack(): void {
+    setTimeout(() => this.computerAttack(), 1000);
+  }
+
+  private disableScroll(): void {
+    document.body.classList.add('no-scroll');
+  }
+
+  private enableScroll(): void {
+    document.body.classList.remove('no-scroll');
   }
 }
 

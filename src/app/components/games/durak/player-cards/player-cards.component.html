@@ -1,0 +1,19 @@
+<div class="player" [class.player-computer]="isComputer" [class.player-human]="!isComputer">
+  <div class="cards">
+    @for (card of player.hand; track card) {
+      <div class="card" 
+           [ngClass]="isComputer ? 'back' : getCardClasses(card)" 
+           [@cardAppear]="card"
+           [draggable]="!isComputer && canDrag"
+           (dragstart)="dragStart.emit({ event: $event, card })"
+           (dragend)="dragEnd.emit($event)">
+        @if (!isComputer) {
+          <span class="rank top">{{card.rank}}</span>
+          <span class="suit">{{getSuitSymbol(card.suit)}}</span>
+          <span class="rank bottom">{{card.rank}}</span>
+        }
+      </div>
+    }
+  </div>
+  @if (showAction) { <div class="action-label">{{actionLabel}}</div> }
+</div>

@@ -1,0 +1,131 @@
+.sidebar {
+  position: absolute;
+  left: 20px;
+  top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+.turn-indicator {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  background: #24004e;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+.deck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+.deck-card {
+  margin-bottom: 10px;
+}
+.trump-card {
+  position: absolute;
+  bottom: -20px;
+  left: 20px;
+  transform: rotate(-15deg);
+}
+.trump-suit-only {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.trump-suit-only .suit.red {
+  color: #d32f2f;
+}
+.trump-suit-only .suit.black {
+  color: #212121;
+}
+.discard-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  gap: 10px;
+}
+.discard-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.discard-button:hover {
+  background: #b71c1c;
+}
+.discard-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+.take-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.take-button:hover {
+  background: #f57c00;
+}
+.take-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+.card {
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+.card.red {
+  color: #d32f2f;
+}
+.card.black {
+  color: #212121;
+}
+.card.back {
+  background: linear-gradient(45deg, #0288d1, #0277bd);
+  border: 2px solid #01579b;
+}
+.card.back::after {
+  content: "🎴";
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.rank {
+  font-size: 18px;
+  font-weight: bold;
+}
+.rank.top {
+  align-self: flex-start;
+}
+.rank.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+.suit {
+  font-size: 36px;
+  line-height: 1;
+}

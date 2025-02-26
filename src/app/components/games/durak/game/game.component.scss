@@ -1,7 +1,3 @@
-body.no-scroll {
-  overflow: hidden;
-}
-
 .game-container {
   display: flex;
   flex-direction: column;
@@ -16,190 +12,11 @@ body.no-scroll {
   font-size: 24px;
   font-weight: bold;
 }
-.bet-selection {
+.gameplay {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  color: white;
-}
-.deck-size-select {
-  padding: 10px;
-  font-size: 18px;
-  background: #c000ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.deck-size-select:hover {
-  background: #a000d0;
-}
-.bet-selection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  color: white;
-}
-.bet-button {
-  padding: 15px 30px;
-  font-size: 20px;
-  background: #c000ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.sidebar {
-  position: absolute;
-  left: 20px;
-  top: 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  align-items: center;
-}
-.turn-indicator {
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  background: #24004e;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-.deck {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-}
-.deck-card {
-  margin-bottom: 10px;
-}
-.trump-card {
-  position: absolute;
-  bottom: -20px;
-  left: 20px;
-  transform: rotate(-15deg);
-}
-.trump-suit-only {
-  font-size: 48px;
-  line-height: 1;
-  margin-bottom: 10px;
-}
-.trump-suit-only .suit.red {
-  color: #d32f2f;
-}
-.trump-suit-only .suit.black {
-  color: #212121;
-}
-.discard-pile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-  gap: 10px;
-}
-.discard-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.discard-button:hover {
-  background: #b71c1c;
-}
-.discard-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-.take-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.take-button:hover {
-  background: #f57c00;
-}
-.take-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-.cards {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.card {
-  width: 80px;
-  height: 120px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  background: white;
-  position: relative;
-  cursor: grab;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px;
-  font-family: Arial, sans-serif;
-  transition: transform 0.1s ease, opacity 0.2s;
-}
-.card.red {
-  color: #d32f2f;
-}
-.card.black {
-  color: #212121;
-}
-.card.back {
-  background: linear-gradient(45deg, #0288d1, #0277bd);
-  border: 2px solid #01579b;
-}
-.card.back::after {
-  content: "🎴";
-  font-size: 40px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.card[draggable="true"]:hover {
-  transform: scale(1.05);
-}
-.card[draggable="true"]:active {
-  opacity: 0.7;
-  cursor: grabbing;
-}
-.card[draggable="false"] {
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-.rank {
-  font-size: 18px;
-  font-weight: bold;
-}
-.rank.top {
-  align-self: flex-start;
-}
-.rank.bottom {
-  align-self: flex-end;
-  transform: rotate(180deg);
-}
-.suit {
-  font-size: 36px;
-  line-height: 1;
 }
 .table {
   min-height: 500px;
@@ -223,37 +40,53 @@ body.no-scroll {
   gap: 20px;
   position: relative;
 }
+.card {
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+.card.red {
+  color: #d32f2f;
+}
+.card.black {
+  color: #212121;
+}
+.card.attack {
+  /* Специфические стили для карты атаки */
+  position: relative;
+  z-index: 2; /* Чтобы не перекрывалась картой защиты */
+}
 .card.defend {
   position: absolute;
   left: 60px;
   top: 5px;
   transform: rotate(15deg);
+  z-index: 2; /* Карта защиты поверх карты атаки */
 }
-.player-computer {
-  margin-top: 20px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.player-human {
-  margin-bottom: 20px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.action-label {
-  position: absolute;
-  right: 0px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.8);
-  color: #333;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 20px;
+.rank {
+  font-size: 18px;
   font-weight: bold;
+}
+.rank.top {
+  align-self: flex-start;
+}
+.rank.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+.suit {
+  font-size: 36px;
+  line-height: 1;
 }
 .modal,
 .game-end-modal {
@@ -273,8 +106,8 @@ body.no-scroll {
   border-radius: 8px;
   text-align: center;
   width: 100%;
-  color: #212121;
   max-width: 500px;
+  color: #212121;
 }
 .modal-button {
   margin: 10px;
@@ -295,8 +128,7 @@ body.no-scroll {
   background: #b71c1c;
 }
 .exit-button {
-  max-width: 100px;
-  width: 100%;
+  width:200px;
   padding: 10px 20px;
   background: #ff4444;
   color: white;
@@ -307,4 +139,7 @@ body.no-scroll {
 }
 .exit-button:hover {
   background: #cc0000;
+}
+body.no-scroll {
+  overflow: hidden;
 }

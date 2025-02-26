@@ -1,0 +1,62 @@
+:host {
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 50px;
+  }
+
+  .user-profile {
+    &__avatar {
+      max-width: 100px;
+      width: 100%;
+      border: 1px solid #c000ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+  }
+
+  .user-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    &__balance {
+        position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        bottom: -10px;
+        left: 0;
+      }
+    }
+  }
+
+  .user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__link {
+      background-color: #c000ff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: 350ms;
+
+      &:hover {
+        background-color: #bf00ffc1;
+        transition: 350ms;
+      }
+    }
+  }
+}

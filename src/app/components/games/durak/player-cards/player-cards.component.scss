@@ -1,0 +1,89 @@
+.player {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.player-computer {
+  margin-top: 20px;
+}
+.player-human {
+  margin-bottom: 20px;
+}
+.cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card {
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+.card.red {
+  color: #d32f2f;
+}
+.card.black {
+  color: #212121;
+}
+.card.back {
+  background: linear-gradient(45deg, #0288d1, #0277bd);
+  border: 2px solid #01579b;
+}
+.card.back::after {
+  content: "🎴";
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.card[draggable="true"]:hover {
+  transform: scale(1.05);
+}
+.card[draggable="true"]:active {
+  opacity: 0.7;
+  cursor: grabbing;
+}
+.card[draggable="false"] {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.rank {
+  font-size: 18px;
+  font-weight: bold;
+}
+.rank.top {
+  align-self: flex-start;
+}
+.rank.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+.suit {
+  font-size: 36px;
+  line-height: 1;
+}
+.action-label {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: bold;
+}

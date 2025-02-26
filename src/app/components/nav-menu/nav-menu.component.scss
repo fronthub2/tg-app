@@ -26,12 +26,24 @@
     padding: 10px 15px;
     border: 1px solid #3d0072;
     border-radius: 10px;
+    transition: 350ms;
+
+    &:hover {
+      background-color: #3d0072;
+      transition: 350ms;
+    }
   }
 
   .signup {
     background-color: #c000ff;
     padding: 10px 15px;
     border-radius: 10px;
+    transition: 350ms;
+
+    &:hover {
+      background-color: #bf00ffc1;
+      transition: 350ms;
+    }
   }
 
   .icon-container {

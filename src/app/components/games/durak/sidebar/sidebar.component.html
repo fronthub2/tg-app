@@ -1,0 +1,48 @@
+<div class="sidebar">
+  @if (human) {
+  <div class="turn-indicator">
+    {{ human.isAttacking ? "Ход игрока" : "Ход компьютера" }}
+  </div>
+  } @else {
+  <div class="turn-indicator">Ожидание игрока</div>
+  }
+  <div class="deck">
+    @if (deckCount > 0) {
+    <div class="card back deck-card"></div>
+    <span>Колоды: {{ deckCount }}</span>
+    <div class="trump-card" [ngClass]="getCardClasses(trumpCard)">
+      <span class="rank top">{{ trumpCard.rank }}</span>
+      <span class="suit">{{ getSuitSymbol(trumpCard.suit) }}</span>
+      <span class="rank bottom">{{ trumpCard.rank }}</span>
+    </div>
+    } @else {
+    <div class="trump-suit-only">
+      <span class="suit">{{ getSuitSymbol(trumpCard.suit) }}</span>
+    </div>
+    <span>Колоды: 0</span>
+    }
+  </div>
+  <div class="discard-pile">
+    @if (discardPile.length > 0) {
+    <div class="card back"></div>
+    }
+    <span>Отбой: {{ discardPile.length }}</span>
+  </div>
+  @if (human) { @if (human.isAttacking) {
+  <button
+    class="discard-button"
+    (click)="endTurn.emit()"
+    [disabled]="!canEndTurn"
+  >
+    Отбой
+  </button>
+  } @else {
+  <button
+    class="take-button"
+    (click)="takeCards.emit()"
+    [disabled]="!canEndTurn"
+  >
+    Забрать
+  </button>
+  } }
+</div>

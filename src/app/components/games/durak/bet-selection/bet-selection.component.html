@@ -1,1 +1,20 @@
-<p>bet-selection works!</p>
+<div class="bet-selection">
+  <h2>Выберите количество карт:</h2>
+  <select
+    [value]="deckSize()"
+    (change)="updateDeckSize($event)"
+    class="deck-size-select"
+  >
+    <option value="36">36 карт (классический)</option>
+    <option value="24">24 карты (укороченный)</option>
+  </select>
+  <h2>Выберите ставку:</h2>
+  @for (bet of [0.50, 1.00, 1.50]; track bet) {
+  <button
+    class="bet-button"
+    (click)="startGame.emit({ bet, deckSize: deckSize() })"
+  >
+    {{ bet.toFixed(2) }}
+  </button>
+  }
+</div>
