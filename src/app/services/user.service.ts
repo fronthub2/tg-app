@@ -7,9 +7,9 @@ import { LocalStorageService } from './local-storage.service';
   providedIn: 'root',
 })
 export class UserService {
-  lsService = inject(LocalStorageService);
-  userBSubject!: BehaviorSubject<IUser[]>;
-  key = 'user';
+  private lsService = inject(LocalStorageService);
+  private userBSubject!: BehaviorSubject<IUser[]>;
+  private key = 'user';
 
   constructor() {
     const getLS = this.lsService.getLocalStorage(this.key);
@@ -24,10 +24,9 @@ export class UserService {
 
   updateUserInfo(user: IUser[]) {
     this.userBSubject.next(user);
-    console.log('userBS', this.userBSubject.getValue());
   }
 
   saveInLocalStorage(key: string): void {
-    this.lsService.setLocalStorage(key, this.userBSubject);
+    this.lsService.setLocalStorage(key, this.userBSubject.getValue());
   }
 }

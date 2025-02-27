@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { Card, Player } from '../interface/durak.game.interface';
+import { DeckSize, ICard, IPlayer } from '../interface/durak.game.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -8,19 +8,19 @@ export class DurakGameService implements OnInit {
   private suits = ['hearts', 'diamonds', 'clubs', 'spades'] as const;
   private fullRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'] as const;
   private shortRanks = ['9', '10', 'J', 'Q', 'K', 'A'] as const;
-  private deck: Card[] = [];
-  private trumpSuit!: Card['suit'];
-  private trumpCard!: Card;
-  private discardPile: Card[] = [];
+  private deck: ICard[] = [];
+  private trumpSuit!: ICard['suit'];
+  private trumpCard!: ICard;
+  private discardPile: ICard[] = [];
   private isFirstTurnCompleted = false; // Флаг для отслеживания первого отбоя
 
   ngOnInit(): void {
     this.initializeDeck(); // По умолчанию 36 карт
   }
 
-  initializeDeck(deckSize: '24' | '36' = '36'): void {
+  initializeDeck(deckSize: DeckSize = '36'): void {
     this.deck = [];
-    console.log(deckSize)
+    console.log(deckSize);
     const ranks = deckSize === '36' ? this.fullRanks : this.shortRanks;
     for (const suit of this.suits) {
       for (const rank of ranks) {
@@ -42,13 +42,13 @@ export class DurakGameService implements OnInit {
     }
   }
 
-  dealCards(): [Player, Player] {
+  dealCards(): [IPlayer, IPlayer] {
     const player1 = { hand: this.deck.splice(0, 6), isAttacking: true };
     const player2 = { hand: this.deck.splice(0, 6), isAttacking: false };
     return [player1, player2];
   }
 
-  canBeat(attackCard: Card, defendCard: Card): boolean {
+  canBeat(attackCard: ICard, defendCard: ICard): boolean {
     if (attackCard.suit === defendCard.suit) {
       return defendCard.value > attackCard.value;
     }
@@ -57,37 +57,36 @@ export class DurakGameService implements OnInit {
     );
   }
 
-  getTrumpSuit(): Card['suit'] {
+  getTrumpSuit(): ICard['suit'] {
     return this.trumpSuit;
   }
 
-  getTrumpCard(): Card {
+  getTrumpCard(): ICard {
     return { ...this.trumpCard };
   }
 
   getDeckCount(): number {
-    console.log('getCount', this.deck.length);
     return this.deck.length;
   }
 
-  getDiscardPile(): Card[] {
+  getDiscardPile(): ICard[] {
     return [...this.discardPile];
   }
 
-  drawCard(): Card | undefined {
+  drawCard(): ICard | undefined {
     return this.deck.shift();
   }
 
-  refillHand(player: Player, maxCards: number = 6): void {
+  refillHand(player: IPlayer, maxCards: number = 6): void {
     while (player.hand.length < maxCards && this.deck.length > 0) {
       player.hand.push(this.drawCard()!);
     }
   }
 
   canAttackMore(
-    player: Player,
-    opponent: Player,
-    table: { attack: Card; defend?: Card }[]
+    player: IPlayer,
+    opponent: IPlayer,
+    table: { attack: ICard; defend?: ICard }[]
   ): boolean {
     if (table.length === 0) return true;
     const tableRanks = table.flatMap((pair) =>
@@ -101,29 +100,29 @@ export class DurakGameService implements OnInit {
     return hasMatchingRank && table.length < maxAttacks;
   }
 
-  endTurn(table: { attack: Card; defend?: Card }[]): void {
+  endTurn(table: { attack: ICard; defend?: ICard }[]): void {
     this.discardPile.push(...table.map((pair) => pair.attack));
     this.discardPile.push(...table.map((pair) => pair.defend!).filter(Boolean));
     table.length = 0;
     this.isFirstTurnCompleted = true; // Устанавливаем флаг после первого отбоя
   }
 
-  takeCards(player: Player, table: { attack: Card; defend?: Card }[]): void {
+  takeCards(player: IPlayer, table: { attack: ICard; defend?: ICard }[]): void {
     player.hand.push(...table.map((pair) => pair.attack));
     player.hand.push(...table.map((pair) => pair.defend!).filter(Boolean));
     table.length = 0;
   }
 
-  checkGameEnd(human: Player, computer: Player): 'human' | 'computer' | null {
+  checkGameEnd(human: IPlayer, computer: IPlayer): 'human' | 'computer' | null {
     if (human.hand.length === 0) return 'human';
     if (computer.hand.length === 0) return 'computer';
     return null;
   }
 
   computerAttack(
-    computer: Player,
-    human: Player,
-    table: { attack: Card; defend?: Card }[]
+    computer: IPlayer,
+    human: IPlayer,
+    table: { attack: ICard; defend?: ICard }[]
   ): void {
     const tableRanks = table.flatMap((pair) =>
       [pair.attack.rank, pair.defend?.rank].filter(Boolean)
@@ -136,7 +135,7 @@ export class DurakGameService implements OnInit {
       return a.value - b.value;
     });
 
-    let attackCard: Card | undefined;
+    let attackCard: ICard | undefined;
 
     if (tableRanks.length > 0) {
       attackCard = handCopy.find((card) => tableRanks.includes(card.rank));
@@ -159,8 +158,8 @@ export class DurakGameService implements OnInit {
   }
 
   computerDefend(
-    computer: Player,
-    table: { attack: Card; defend?: Card }[]
+    computer: IPlayer,
+    table: { attack: ICard; defend?: ICard }[]
   ): boolean {
     if (table.length === 0 || table[table.length - 1].defend) return false;
 

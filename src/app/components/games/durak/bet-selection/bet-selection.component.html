@@ -1,7 +1,7 @@
 <div class="bet-selection">
   <h2>Выберите количество карт:</h2>
   <select
-    [value]="deckSize()"
+    [(ngModel)]="deckSize"
     (change)="updateDeckSize($event)"
     class="deck-size-select"
   >
@@ -12,7 +12,7 @@
   @for (bet of [0.50, 1.00, 1.50]; track bet) {
   <button
     class="bet-button"
-    (click)="startGame.emit({ bet, deckSize: deckSize() })"
+    (click)="startGame.emit({ bet, deckSize: deckSize })"
   >
     {{ bet.toFixed(2) }}
   </button>

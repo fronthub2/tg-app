@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Card, Player } from '../../../../interface/durak.game.interface';
+import { ICard, IPlayer } from '../../../../interface/durak.game.interface';
 
 @Component({
   selector: 'app-player-cards',
@@ -24,11 +24,11 @@ import { Card, Player } from '../../../../interface/durak.game.interface';
   ],
 })
 export class PlayerCardsComponent {
-  @Input() player!: Player;
+  @Input() player!: IPlayer;
   @Input() isComputer = false;
   @Input() actionLabel = '';
   @Input() showAction = false;
-  @Output() dragStart = new EventEmitter<{ event: DragEvent; card: Card }>(); // Обновляем тип эмиттера
+  @Output() dragStart = new EventEmitter<{ event: DragEvent; card: ICard }>(); // Обновляем тип эмиттера
   @Output() dragEnd = new EventEmitter<DragEvent>();
 
   get canDrag(): boolean {
@@ -38,13 +38,13 @@ export class PlayerCardsComponent {
     );
   }
 
-  getSuitSymbol(suit: Card['suit']): string {
+  getSuitSymbol(suit: ICard['suit']): string {
     return (
       { hearts: '♥️', diamonds: '♦️', clubs: '♣️', spades: '♠️' }[suit] || ''
     );
   }
 
-  getCardClasses(card: Card): string[] {
+  getCardClasses(card: ICard): string[] {
     return [
       'card',
       ['hearts', 'diamonds'].includes(card.suit) ? 'red' : 'black',

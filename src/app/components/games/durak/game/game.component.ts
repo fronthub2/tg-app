@@ -1,15 +1,23 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Card, Player } from '../../../../interface/durak.game.interface';
+import { Subscription, tap } from 'rxjs';
+import {
+  DeckSize,
+  ICard,
+  IPlayer,
+} from '../../../../interface/durak.game.interface';
+import { IUser } from '../../../../interface/user.interface';
 import { DurakGameService } from '../../../../services/durak.game.service';
+import { UserService } from '../../../../services/user.service';
+import { BetSelectionComponent } from '../bet-selection/bet-selection.component';
 import { PlayerCardsComponent } from '../player-cards/player-cards.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { BetSelectionComponent } from '../bet-selection/bet-selection.component';
 
 @Component({
   selector: 'app-game',
+  // Импорты необходимых модулей и компонентов для работы игры
   imports: [
     CommonModule,
     FormsModule,
@@ -19,6 +27,7 @@ import { BetSelectionComponent } from '../bet-selection/bet-selection.component'
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
+  // Анимации для карт: появление и уход с игрового стола
   animations: [
     trigger('cardMove', [
       transition(':enter', [
@@ -46,52 +55,98 @@ import { BetSelectionComponent } from '../bet-selection/bet-selection.component'
     ]),
   ],
 })
-export class GameComponent {
-  gameService = inject(DurakGameService);
+export class GameComponent implements OnInit, OnDestroy {
+  // Инъекция сервисов для управления игрой и пользователем
+  private gameService = inject(DurakGameService);
+  private userService = inject(UserService);
+  private subscription = new Subscription(); // Для управления подписками
+  user!: IUser; // Информация о пользователе
 
-  human = signal<Player | undefined>(undefined);
-  computer = signal<Player | undefined>(undefined);
-  table = signal<{ attack: Card; defend?: Card }[]>([]);
-  gameStarted = signal(false);
-  gameResult = signal('');
-  canEndTurn = signal(false);
-  balance = 10.0;
-  currentBet = signal(0);
-  showModal = signal(false);
-  isDragging = signal(false);
-  isDraggingOverTable = signal(false);
-  showPlayerActionLabel = signal(false);
-  showComputerActionLabel = signal(false);
-  playerActionText = signal('');
-  computerActionText = signal('');
-  showGameEndModal = signal(false);
+  // Реактивные сигналы для состояния игры
+  human = signal<IPlayer | undefined>(undefined); // Игрок-человек
+  computer = signal<IPlayer | undefined>(undefined); // Компьютерный оппонент
+  table = signal<{ attack: ICard; defend?: ICard }[]>([]); // Карты на столе
+  gameStarted = signal(false); // Флаг начала игры
+  gameResult = signal(''); // Результат игры
+  canEndTurn = signal(false); // Возможность завершить ход
+  balance: number = 0; // Баланс игрока
+  currentBet = signal(0); // Текущая ставка
+  showModal = signal(false); // Показ модального окна для пополнения баланса
+  isDragging = signal(false); // Флаг перетаскивания карты
+  isDraggingOverTable = signal(false); // Флаг перетаскивания над столом
+  showPlayerActionLabel = signal(false); // Показ метки действия игрока
+  showComputerActionLabel = signal(false); // Показ метки действия компьютера
+  playerActionText = signal(''); // Текст действия игрока
+  computerActionText = signal(''); // Текст действия компьютера
+  showGameEndModal = signal(false); // Показ модального окна окончания игры
 
-  getSuitSymbol(suit: Card['suit']): string {
+  // Инициализация компонента
+  ngOnInit(): void {
+    // Подписка на получение информации о пользователе
+    this.subscription.add(
+      this.userService
+        .getUserInfo()
+        .pipe(
+          tap((users) =>
+            users.map((user) => {
+              this.user = user;
+              return user;
+            })
+          )
+        )
+        .subscribe()
+    );
+    this.balance = Number(this.user.balance); // Установка начального баланса
+  }
+
+  // Очистка подписок при уничтожении компонента
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  // Получение символа масти карты
+  getSuitSymbol(suit: ICard['suit']): string {
     return (
       { hearts: '♥️', diamonds: '♦️', clubs: '♣️', spades: '♠️' }[suit] || ''
     );
   }
 
-  getCardClasses(card: Card): string[] {
+  // Определение классов для стилизации карты
+  getCardClasses(card: ICard): string[] {
     return [
       'card',
       ['hearts', 'diamonds'].includes(card.suit) ? 'red' : 'black',
     ];
   }
 
+  // Получение оставшихся карт в колоде
+  getDeckCount() {
+    return this.gameService.getDeckCount();
+  }
+
+  // Получение козырной карты
+  getTrumpCard() {
+    return this.gameService.getTrumpCard();
+  }
+
+  // Получение сброшенных карт
+  getDiscardPile() {
+    return this.gameService.getDiscardPile();
+  }
+
+  // Начало игры с указанной ставкой и размером колоды
   startGameWithBet({
     bet,
     deckSize,
   }: {
     bet: number;
-    deckSize: '24' | '36';
+    deckSize: DeckSize;
   }): void {
-    // Обновляем тип аргумента
     this.currentBet.set(bet);
-    if (this.balance < bet) return this.showModalWithScrollLock();
-    this.balance -= bet;
-    this.gameService.initializeDeck(deckSize);
-    const [human, computer] = this.gameService.dealCards();
+    if (this.balance < bet) return this.showModalWithScrollLock(); // Проверка баланса
+    this.balance -= bet; // Списание ставки
+    this.gameService.initializeDeck(deckSize); // Инициализация колоды
+    const [human, computer] = this.gameService.dealCards(); // Раздача карт
     this.human.set(human);
     this.computer.set(computer);
     this.table.set([]);
@@ -99,26 +154,30 @@ export class GameComponent {
     this.showGameEndModal.set(false);
     this.gameResult.set('');
     this.canEndTurn.set(false);
-    if (!human.isAttacking) this.delayedComputerAttack();
+    if (!human.isAttacking) this.delayedComputerAttack(); // Компьютер начинает, если игрок не атакует
   }
 
+  // Пополнение баланса
   topUpBalance(amount: number): void {
     this.balance += amount;
     this.closeModal();
     if (this.balance >= this.currentBet())
-      this.startGameWithBet({ bet: this.currentBet(), deckSize: '36' }); // Указываем дефолтный deckSize
+      this.startGameWithBet({ bet: this.currentBet(), deckSize: '36' }); // Перезапуск игры с дефолтной колодой
   }
 
+  // Закрытие модального окна
   closeModal(): void {
     this.showModal.set(false);
     this.enableScroll();
     this.currentBet.set(0);
   }
 
+  // Закрытие модального окна при клике на фон
   closeModalOnBackdrop(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.closeModal();
   }
 
+  // Сброс игры
   resetGame(): void {
     this.gameStarted.set(false);
     this.showGameEndModal.set(false);
@@ -129,10 +188,12 @@ export class GameComponent {
     this.showComputerActionLabel.set(false);
   }
 
+  // Закрытие модального окна окончания игры при клике на фон
   closeGameEndModalOnBackdrop(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.resetGame();
   }
 
+  // Выход из игры
   exitGame(): void {
     this.gameStarted.set(false);
     this.showGameEndModal.set(false);
@@ -141,6 +202,7 @@ export class GameComponent {
     this.canEndTurn.set(false);
   }
 
+  // Проверка возможности перетаскивания карты игроком
   canPlayerDrag(): boolean {
     const human = this.human();
     return human
@@ -150,7 +212,8 @@ export class GameComponent {
       : false;
   }
 
-  onDragStart(event: DragEvent, card: Card): void {
+  // Начало перетаскивания карты
+  onDragStart(event: DragEvent, card: ICard): void {
     if (!this.canPlayerDrag()) return event.preventDefault();
     this.isDragging.set(true);
     event.dataTransfer!.setData('text/plain', JSON.stringify(card));
@@ -159,12 +222,14 @@ export class GameComponent {
     event.dataTransfer!.setDragImage(target, 40, 60);
   }
 
+  // Завершение перетаскивания
   onDragEnd(event: DragEvent): void {
     this.isDragging.set(false);
     this.isDraggingOverTable.set(false);
     (event.target as HTMLElement).style.opacity = '1';
   }
 
+  // Обработка перетаскивания над столом
   onDragOverTable(event: DragEvent): void {
     if (this.canPlayerDrag()) event.preventDefault();
   }
@@ -177,6 +242,7 @@ export class GameComponent {
     this.isDraggingOverTable.set(false);
   }
 
+  // Сброс карты на стол
   onDropTable(event: DragEvent): void {
     if (!this.canPlayerDrag()) return;
     event.preventDefault();
@@ -186,7 +252,8 @@ export class GameComponent {
     if (cardData) this.playCard(JSON.parse(cardData));
   }
 
-  playCard(card: Card): void {
+  // Ход игрока с картой
+  playCard(card: ICard): void {
     const human = this.human();
     if (!human) return;
     const cardInHand = human.hand.find(
@@ -202,7 +269,7 @@ export class GameComponent {
       this.table.update((t) => [...t, { attack: cardInHand }]);
       human.hand = human.hand.filter((c) => c !== cardInHand);
       this.canEndTurn.set(false);
-      setTimeout(() => this.computerDefend(), 1000);
+      setTimeout(() => this.computerDefend(), 1000); // Компьютер защищается
     } else if (
       this.table().length > 0 &&
       !this.table()[this.table().length - 1].defend
@@ -215,20 +282,22 @@ export class GameComponent {
       });
       human.hand = human.hand.filter((c) => c !== cardInHand);
       this.canEndTurn.set(false);
-      setTimeout(() => this.computerContinue(), 1000);
+      setTimeout(() => this.computerContinue(), 1000); // Компьютер продолжает
     }
     this.checkGameEnd();
   }
 
+  // Защита компьютера
   computerDefend(): void {
     if (this.gameService.computerDefend(this.computer()!, this.table())) {
       this.canEndTurn.set(true);
     } else {
-      this.handleComputerTake();
+      this.handleComputerTake(); // Компьютер забирает карты
     }
     this.checkGameEnd();
   }
 
+  // Продолжение хода компьютера
   computerContinue(): void {
     if (!this.table().every((pair) => pair.defend)) return;
     if (
@@ -240,10 +309,11 @@ export class GameComponent {
     ) {
       setTimeout(() => this.computerAttack(), 1000);
     } else {
-      this.handleComputerEndTurn();
+      this.handleComputerEndTurn(); // Компьютер завершает ход
     }
   }
 
+  // Атака компьютера
   computerAttack(): void {
     this.human.update((h) => {
       if (h) h.isAttacking = false;
@@ -262,6 +332,7 @@ export class GameComponent {
     this.checkGameEnd();
   }
 
+  // Игрок забирает карты
   takeCardsToHand(): void {
     if (!this.canEndTurn() || this.human()?.isAttacking) return;
     this.gameService.takeCards(this.human()!, this.table());
@@ -269,6 +340,7 @@ export class GameComponent {
     this.showAction('Забрал', 'player', () => this.computerAttack());
   }
 
+  // Завершение хода игрока
   endTurn(): void {
     if (!this.canEndTurn() || !this.human()?.isAttacking) return;
     this.gameService.endTurn(this.table());
@@ -276,6 +348,7 @@ export class GameComponent {
     this.showAction('Отбой', 'player', () => this.computerAttack());
   }
 
+  // Проверка окончания игры
   checkGameEnd(): void {
     const result = this.gameService.checkGameEnd(
       this.human()!,
@@ -285,21 +358,33 @@ export class GameComponent {
     setTimeout(() => {
       this.gameResult.set(
         result === 'human'
-          ? 'Вы победили!' + ((this.balance += this.currentBet() * 2), '')
-          : 'Компьютер победил! Вы - дурак!'
+          ? 'Вы победили!' + ((this.user.balance += this.currentBet() * 2), '')
+          : 'Вы проиграли!'
       );
-      if (this.balance <= 0)
-        this.gameResult.update((r) => r + ' У вас закончились деньги!');
-      this.showGameEndModal.set(true);
-      this.disableScroll();
+      if (this.balance <= 0) {
+        this.gameResult.update((r) => r + ' Пополните кошелек');
+        this.showGameEndModal.set(true);
+        this.disableScroll();
+      }
     }, 1000);
   }
 
+  private resultWin() {
+    this.user.balance += this.currentBet() * 2;
+    this.user.games += 1;
+    this.user.earnings += 1;
+    this.user.wins += 1;
+    this.userService.updateUserInfo([this.user]);
+    this.userService.saveInLocalStorage('user');
+  }
+
+  // Показ модального окна с блокировкой прокрутки
   private showModalWithScrollLock(): void {
     this.showModal.set(true);
     this.disableScroll();
   }
 
+  // Переключение хода на компьютер
   private switchTurnToComputer(): void {
     this.human.update((h) => {
       if (h) h.isAttacking = false;
@@ -314,6 +399,7 @@ export class GameComponent {
     this.gameService.refillHand(this.computer()!);
   }
 
+  // Показ действия игрока или компьютера
   private showAction(
     text: string,
     type: 'player' | 'computer',
@@ -333,6 +419,7 @@ export class GameComponent {
     }, 1000);
   }
 
+  // Обработка взятия карт компьютером
   private handleComputerTake(): void {
     this.gameService.takeCards(this.computer()!, this.table());
     this.human.update((h) => {
@@ -349,6 +436,7 @@ export class GameComponent {
     this.showAction('Забрал', 'computer', () => {});
   }
 
+  // Завершение хода компьютера
   private handleComputerEndTurn(): void {
     this.gameService.endTurn(this.table());
     this.human.update((h) => {
@@ -365,23 +453,18 @@ export class GameComponent {
     this.showAction('Отбой', 'computer', this.checkGameEnd.bind(this));
   }
 
+  // Задержка атаки компьютера
   private delayedComputerAttack(): void {
     setTimeout(() => this.computerAttack(), 1000);
   }
 
+  // Блокировка прокрутки страницы
   private disableScroll(): void {
     document.body.classList.add('no-scroll');
   }
 
+  // Разблокировка прокрутки страницы
   private enableScroll(): void {
     document.body.classList.remove('no-scroll');
   }
 }
-
-/*
-Изменения в GameComponent:
-Убраны прямые обращения к deck, trumpSuit, discardPile через this.gameService['...'].
-Используются методы сервиса: getTrumpSuit, getDeckCount, getDiscardPile, refillHand, и т.д.
-Логика хода компьютера и завершения игры делегирована сервису.
-Исправлены ошибки в getCardClasses и canPlayerDrag.
-*/

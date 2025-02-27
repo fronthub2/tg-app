@@ -11,9 +11,9 @@
     @if (human()) {
     <app-sidebar
       [human]="human()!"
-      [deckCount]="gameService.getDeckCount()"
-      [trumpCard]="gameService.getTrumpCard()"
-      [discardPile]="gameService.getDiscardPile()"
+      [deckCount]="getDeckCount()"
+      [trumpCard]="getTrumpCard()"
+      [discardPile]="getDiscardPile()"
       (endTurn)="endTurn()"
       (takeCards)="takeCardsToHand()"
       [canEndTurn]="canEndTurn()"
@@ -90,13 +90,7 @@
       <button class="modal-button" (click)="resetGame()">Новая игра</button>
     </div>
   </div>
+  } @if (gameStarted() && !showGameEndModal()) {
+  <button class="exit-button" (click)="exitGame()">ВЫЙТИ</button>
   }
-
-  <button
-    class="exit-button"
-    *ngIf="gameStarted() && !showGameEndModal()"
-    (click)="exitGame()"
-  >
-    ВЫЙТИ
-  </button>
 </div>

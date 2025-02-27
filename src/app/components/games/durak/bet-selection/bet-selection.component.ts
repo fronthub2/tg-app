@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DeckSize } from '../../../../interface/durak.game.interface';
 
 @Component({
   selector: 'app-bet-selection',
@@ -8,15 +9,17 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './bet-selection.component.scss',
 })
 export class BetSelectionComponent {
-  @Input() balance = 0;
+  @Input() balance: string | number = 0;
   @Output() startGame = new EventEmitter<{
     bet: number;
-    deckSize: '24' | '36';
+    deckSize: DeckSize;
   }>(); // Обновляем тип эмиттера
-  deckSize = signal<'24' | '36'>('36');
+
+  deckSize: DeckSize = '36';
 
   updateDeckSize(event: Event): void {
     const target = event.target as HTMLSelectElement;
-    this.deckSize.set(target.value as '24' | '36');
+    // this.deckSize.set(target.value as '24' | '36');
+    console.log('event', event)
   }
 }

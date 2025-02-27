@@ -1,14 +1,14 @@
 export interface IUser {
   id: string | number;
   firstname: string;
-  games: string | number;
-  wins: string | number;
-  earnings: string | number;
-  balance: string | number;
+  games: number;
+  wins: number;
+  earnings: number;
+  balance: number;
   rules: 'admin' | 'user' | 'support';
 }
 
-export const testUser: IUser = {
+export const testUser = {
   "id": "asds",
   "firstname": "ad",
   "games": "33",
