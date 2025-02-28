@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { minesGuard } from './guards/mines.guard';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,7 @@ export const routes: Routes = [
   },
   {
     path: 'board-games/game-mines/start-mines',
+    canActivate: [minesGuard],
     loadComponent: () =>
       import('./components/games/mines/mines.component').then(
         (c) => c.MinesComponent

@@ -2,22 +2,30 @@
   <div class="game__title">Mines</div>
 
   <div class="game__content">
-    <div class="game__balance">Balance: 124 rub</div>
+    <div class="game__balance">Баланс: {{ user.balance.toFixed(2) | currency  }}</div>
     <div class="game__stake">
-      <div>Stake:</div>
-      <input class="game__stake-input" type="text" placeholder="ставка" />
+      <div>Ставка:</div>
+      <input
+        class="game__stake-input"
+        type="text"
+        placeholder="ставка"
+        [(ngModel)]="stake"
+      />
     </div>
     <div class="game__ratio">
-      <div class="game__ratio-title">Ratio:</div>
-      <select class="game__multiplier">
-        <option class="game__multiplier-option" value="x0.5">0.5</option>
+      <div class="game__ratio-title">Коэффициент:</div>
+      <select class="game__multiplier" [(ngModel)]="ratio">
+        <option class="game__multiplier-option" value="0.2">x0.2</option>
+        <option class="game__multiplier-option" value="0.5">x0.5</option>
         <option class="game__multiplier-option" value="1">x1</option>
-        <option class="game__multiplier-option" value="2">x2</option>
-        <option class="game__multiplier-option" value="3">x3</option>
+        <option class="game__multiplier-option" value="1.5">x1.5</option>
       </select>
     </div>
-    <div class="game__winning">Winning: 150 rub</div>
   </div>
 
-  <a routerLink="start-mines">start</a>
+  <a (click)="connectForMines()" routerLink="start-mines" class="game-start">Начать</a>
 </div>
+
+@if (isShowModal) {
+  <app-modal></app-modal>
+}

@@ -10,7 +10,7 @@
     @if (deckCount > 0) {
     <div class="card back deck-card"></div>
     <span>Колоды: {{ deckCount }}</span>
-    <div class="trump-card" [ngClass]="getCardClasses(trumpCard)">
+    <div class="trump-card" >
       <span class="rank top">{{ trumpCard.rank }}</span>
       <span class="suit">{{ getSuitSymbol(trumpCard.suit) }}</span>
       <span class="rank bottom">{{ trumpCard.rank }}</span>
@@ -23,9 +23,6 @@
     }
   </div>
   <div class="discard-pile">
-    @if (discardPile.length > 0) {
-    <div class="card back"></div>
-    }
     <span>Отбой: {{ discardPile.length }}</span>
   </div>
   @if (human) { @if (human.isAttacking) {

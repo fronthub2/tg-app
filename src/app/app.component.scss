@@ -1,12 +1,57 @@
-:host {
-    .wrapper {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+// :host {
+//     .wrapper {
+//         display: flex;
+//         flex-direction: column;
+//         min-height: 100vh;
 
-        &__content {
-            flex: 1;
-            margin: 20px 0;
-        }
+//         &__content {
+//             flex: 1;
+//             margin: 20px 0;
+//             padding: 0 20px
+//             // background-color: #140034;
+//         }
+//     }
+// }
+:host {
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    &__content {
+      flex: 1;
+      margin: 20px 0;
+      padding: 0 20px;
+
+      // Медиазапрос для экранов до 1400px
+      @media (max-width: 1400px) {
+        margin: 18px 0;
+        padding: 0 15px;
+      }
+
+      // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
+      @media (max-width: 1024px) {
+        margin: 15px 0;
+        padding: 0 10px;
+      }
+
+      // Медиазапрос для экранов до 768px (планшеты в портретной ориентации)
+      @media (max-width: 768px) {
+        margin: 12px 0;
+        padding: 0 8px;
+      }
+
+      // Медиазапрос для экранов до 480px (мобильные устройства)
+      @media (max-width: 480px) {
+        margin: 10px 0;
+        padding: 0 5px;
+      }
+
+      // Медиазапрос для экранов до 320px (очень маленькие устройства)
+      @media (max-width: 320px) {
+        margin: 8px 0;
+        padding: 0 3px;
+      }
     }
+  }
 }

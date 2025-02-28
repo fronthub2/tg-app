@@ -1,25 +1,526 @@
+// .game-container {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 20px;
+//   padding: 0 20px;
+//   // background: #140034;
+//   // min-height: 100vh;
+//   position: relative;
+// }
+// .balance {
+//   color: white;
+//   font-size: 24px;
+//   font-weight: bold;
+// }
+// .gameplay {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 20px;
+// }
+// .table {
+//   min-height: 360px;
+//   max-height: 500px;
+//   width: 610px;
+//   margin: 20px auto;
+//   border: 1px dashed white;
+//   background: rgba(255, 255, 255, 0.1);
+//   transition: background 0.2s, border 0.2s;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-wrap: wrap;
+//   gap: 25px;
+// }
+// .table.dropzone-active {
+//   background: rgba(255, 255, 255, 0.3);
+//   border: 2px solid #fff;
+// }
+// .card-pair {
+//   display: flex;
+//   gap: 20px;
+//   position: relative;
+// }
+// .card {
+//   width: 80px;
+//   height: 120px;
+//   border-radius: 8px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+//   background: white;
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   align-items: center;
+//   padding: 5px;
+//   font-family: Arial, sans-serif;
+//   transition: transform 0.1s ease, opacity 0.2s;
+// }
+// .card.red {
+//   color: #d32f2f;
+// }
+// .card.black {
+//   color: #212121;
+// }
+// .card.attack {
+//   /* Специфические стили для карты атаки */
+//   position: relative;
+//   z-index: 2; /* Чтобы не перекрывалась картой защиты */
+// }
+// .card.defend {
+//   position: absolute;
+//   left: 60px;
+//   top: 5px;
+//   transform: rotate(15deg);
+//   z-index: 2; /* Карта защиты поверх карты атаки */
+// }
+// .rank {
+//   font-size: 18px;
+//   font-weight: bold;
+// }
+// .rank.top {
+//   align-self: flex-start;
+// }
+// .rank.bottom {
+//   align-self: flex-end;
+//   transform: rotate(180deg);
+// }
+// .suit {
+//   font-size: 36px;
+//   line-height: 1;
+// }
+// .modal,
+// .game-end-modal {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: rgba(0, 0, 0, 0.5);
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 3;
+// }
+// .modal-content {
+//   background: white;
+//   padding: 40px 0;
+//   border-radius: 8px;
+//   text-align: center;
+//   width: 100%;
+//   max-width: 500px;
+//   color: #212121;
+// }
+// .modal-button {
+//   margin: 10px;
+//   padding: 10px 20px;
+//   background: #0288d1;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
+// }
+// .modal-button:hover {
+//   background: #0277bd;
+// }
+// .modal-button.cancel {
+//   background: #d32f2f;
+// }
+// .modal-button.cancel:hover {
+//   background: #b71c1c;
+// }
+// .exit-button {
+//   width:200px;
+//   padding: 10px 20px;
+//   background: #ff4444;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   font-size: 16px;
+//   cursor: pointer;
+// }
+// .exit-button:hover {
+//   background: #cc0000;
+// }
+// body.no-scroll {
+//   overflow: hidden;
+// }
+
+// .wrapper {
+//   display: flex;
+//   justify-content: flex-start;
+//   margin-top: 20px;
+// }
+// .games__ {
+//   margin: 0 auto;
+// }
+// .sidebar__ {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+// }
+
+// .board-info {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+// }
+
 .game-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
-  background: #140034;
-  min-height: 100vh;
+  padding: 0 20px;
   position: relative;
+
+  // Медиазапрос для экранов до 1400px
+  @media (max-width: 1400px) {
+    padding: 0 15px;
+
+    .balance {
+      font-size: 22px;
+    }
+
+    .wrapper {
+      margin-top: 15px;
+    }
+
+    .table {
+      width: 550px;
+      min-height: 340px;
+      max-height: 450px;
+      gap: 20px;
+    }
+
+    .card {
+      width: 70px;
+      height: 105px;
+
+      .suit {
+        font-size: 32px;
+      }
+
+      .rank {
+        font-size: 16px;
+      }
+    }
+
+    .card.defend {
+      left: 50px;
+      top: 4px;
+    }
+
+    .card-pair {
+      gap: 15px;
+    }
+
+    .exit-button {
+      width: 180px;
+      padding: 8px 16px;
+      font-size: 15px;
+    }
+
+    .modal-content {
+      max-width: 450px;
+      padding: 35px 0;
+    }
+
+    .modal-button {
+      padding: 8px 16px;
+      font-size: 15px;
+    }
+  }
+
+  // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
+  @media (max-width: 1024px) {
+    padding: 0 10px;
+
+    .balance {
+      font-size: 20px;
+    }
+
+    .wrapper {
+      flex-direction: column; // Переключаем на вертикальное расположение
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .sidebar__ {
+      width: 100%;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .games__ {
+      margin: 0;
+    }
+
+    .table {
+      width: 500px;
+      min-height: 300px;
+      max-height: 400px;
+      gap: 15px;
+    }
+
+    .card {
+      width: 60px;
+      height: 90px;
+
+      .suit {
+        font-size: 28px;
+      }
+
+      .rank {
+        font-size: 14px;
+      }
+    }
+
+    .card.defend {
+      left: 45px;
+      top: 3px;
+    }
+
+    .card-pair {
+      gap: 12px;
+    }
+
+    .exit-button {
+      width: 160px;
+      padding: 7px 14px;
+      font-size: 14px;
+    }
+
+    .modal-content {
+      max-width: 400px;
+      padding: 30px 0;
+    }
+
+    .modal-button {
+      padding: 7px 14px;
+      font-size: 14px;
+    }
+  }
+
+  // Медиазапрос для экранов до 768px (планшеты в портретной ориентации)
+  @media (max-width: 768px) {
+    padding: 0 8px;
+
+    .board-info {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .balance {
+      font-size: 18px;
+    }
+
+    .wrapper {
+      gap: 15px;
+    }
+
+    .table {
+      width: 90%; // Переход на процентную ширину
+      min-height: 250px;
+      max-height: 350px;
+      gap: 10px;
+      margin: 15px auto;
+    }
+
+    .card {
+      width: 50px;
+      height: 75px;
+
+      .suit {
+        font-size: 24px;
+      }
+
+      .rank {
+        font-size: 12px;
+      }
+    }
+
+    .card.defend {
+      left: 35px;
+      top: 2px;
+    }
+
+    .card-pair {
+      gap: 10px;
+    }
+
+    .exit-button {
+      width: 140px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      padding: 25px 0;
+    }
+
+    .modal-button {
+      padding: 6px 12px;
+      font-size: 13px;
+      margin: 8px;
+    }
+  }
+
+  // Медиазапрос для экранов до 480px (мобильные устройства)
+  @media (max-width: 480px) {
+    padding: 0 5px;
+
+    .balance {
+      font-size: 16px;
+    }
+
+    .wrapper {
+      gap: 10px;
+    }
+
+    .table {
+      width: 95%;
+      min-height: 200px;
+      max-height: 300px;
+      gap: 8px;
+      margin: 10px auto;
+    }
+
+    .card {
+      width: 40px;
+      height: 60px;
+
+      .suit {
+        font-size: 20px;
+      }
+
+      .rank {
+        font-size: 10px;
+      }
+    }
+
+    .card.defend {
+      left: 30px;
+      top: 1px;
+    }
+
+    .card-pair {
+      gap: 8px;
+    }
+
+    .exit-button {
+      width: 120px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .modal-content {
+      max-width: 95%;
+      padding: 20px 0;
+    }
+
+    .modal-button {
+      padding: 5px 10px;
+      font-size: 12px;
+      margin: 6px;
+    }
+  }
+
+  // Медиазапрос для экранов до 320px (очень маленькие устройства)
+  @media (max-width: 320px) {
+    padding: 0 3px;
+
+    .balance {
+      font-size: 14px;
+    }
+
+    .wrapper {
+      gap: 8px;
+    }
+
+    .table {
+      width: 100%;
+      min-height: 180px;
+      max-height: 250px;
+      gap: 6px;
+      margin: 8px auto;
+    }
+
+    .card {
+      width: 35px;
+      height: 52px;
+
+      .suit {
+        font-size: 18px;
+      }
+
+      .rank {
+        font-size: 9px;
+      }
+    }
+
+    .card.defend {
+      left: 25px;
+      top: 1px;
+    }
+
+    .card-pair {
+      gap: 6px;
+    }
+
+    .exit-button {
+      width: 100px;
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    .modal-content {
+      max-width: 100%;
+      padding: 15px 0;
+    }
+
+    .modal-button {
+      padding: 4px 8px;
+      font-size: 11px;
+      margin: 5px;
+    }
+  }
 }
+
+// Базовые стили остаются без изменений
+.board-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .balance {
   color: white;
   font-size: 24px;
   font-weight: bold;
 }
-.gameplay {
+
+.wrapper {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+}
+
+.games__ {
+  margin: 0 auto;
+}
+
+.sidebar__ {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  justify-content: space-between;
 }
+
 .table {
-  min-height: 500px;
+  min-height: 360px;
+  max-height: 500px;
+  width: 610px;
+  margin: 20px auto;
   border: 1px dashed white;
   background: rgba(255, 255, 255, 0.1);
   transition: background 0.2s, border 0.2s;
@@ -28,18 +529,19 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 25px;
-  margin: 20px auto;
-  width: calc(100% - 360px);
 }
+
 .table.dropzone-active {
   background: rgba(255, 255, 255, 0.3);
   border: 2px solid #fff;
 }
+
 .card-pair {
   display: flex;
   gap: 20px;
   position: relative;
 }
+
 .card {
   width: 80px;
   height: 120px;
@@ -55,39 +557,47 @@
   font-family: Arial, sans-serif;
   transition: transform 0.1s ease, opacity 0.2s;
 }
+
 .card.red {
   color: #d32f2f;
 }
+
 .card.black {
   color: #212121;
 }
+
 .card.attack {
-  /* Специфические стили для карты атаки */
   position: relative;
-  z-index: 2; /* Чтобы не перекрывалась картой защиты */
+  z-index: 2;
 }
+
 .card.defend {
   position: absolute;
   left: 60px;
   top: 5px;
   transform: rotate(15deg);
-  z-index: 2; /* Карта защиты поверх карты атаки */
+  z-index: 2;
 }
+
 .rank {
   font-size: 18px;
   font-weight: bold;
 }
+
 .rank.top {
   align-self: flex-start;
 }
+
 .rank.bottom {
   align-self: flex-end;
   transform: rotate(180deg);
 }
+
 .suit {
   font-size: 36px;
   line-height: 1;
 }
+
 .modal,
 .game-end-modal {
   position: fixed;
@@ -99,7 +609,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 3;
 }
+
 .modal-content {
   background: white;
   padding: 40px 0;
@@ -109,6 +621,7 @@
   max-width: 500px;
   color: #212121;
 }
+
 .modal-button {
   margin: 10px;
   padding: 10px 20px;
@@ -118,17 +631,21 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .modal-button:hover {
   background: #0277bd;
 }
+
 .modal-button.cancel {
   background: #d32f2f;
 }
+
 .modal-button.cancel:hover {
   background: #b71c1c;
 }
+
 .exit-button {
-  width:200px;
+  width: 200px;
   padding: 10px 20px;
   background: #ff4444;
   color: white;
@@ -137,9 +654,11 @@
   font-size: 16px;
   cursor: pointer;
 }
+
 .exit-button:hover {
   background: #cc0000;
 }
+
 body.no-scroll {
   overflow: hidden;
 }

@@ -1,24 +1,35 @@
-<h2 class="title">Mines</h2>
-<div class="board">
-  <div *ngFor="let row of board; let rowIndex = index">
-    <div
-      *ngFor="let cell of row; let colIndex = index"
-      class="cell"
-      [class.revealed]="cell.isRevealed"
-      (click)="revealCell(rowIndex, colIndex)"
-    >
-      <span *ngIf="cell.isRevealed">
-        <ng-container *ngIf="cell.isMine">💣</ng-container>
-        <ng-container *ngIf="!cell.isMine">{{
-          cell.neighboringMines > 0 ? cell.neighboringMines : ""
-        }}</ng-container>
-      </span>
+<div class="title">Mines</div>
+<div>
+  <div class="wins">Выигрыш: {{ wins | currency }}</div>
+  <div class="board">
+    @for (row of board; track rowIndex; let rowIndex = $index) {
+    <div>
+      @for (cell of row; track colIndex; let colIndex = $index) {
+      <div
+        class="cell"
+        [class.revealed]="cell.isRevealed"
+        (click)="revealCell(rowIndex, colIndex)"
+      >
+        @if (cell.isRevealed) {
+        <span>
+          @if (cell.isMine) { 💣 } @else {
+          {{ cell.neighboringMines > 0 ? cell.neighboringMines : "" }}
+          }
+        </span>
+        }
+      </div>
+      }
     </div>
+    }
   </div>
 </div>
 
 @if (isShowButtonExit) {
 <ng-container>
-  <a routerLink=".."> Начать заново </a>
+  <a routerLink=".." class="link"> Начать заново </a>
+</ng-container>
+} @else {
+<ng-container>
+  <a (click)="setWinsCash()" routerLink=".." class="link">Закончить игру</a>
 </ng-container>
 }

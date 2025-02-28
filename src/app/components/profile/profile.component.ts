@@ -19,14 +19,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.subsription.add(
       this.userService
         .getUserInfo()
-        .pipe(
-          tap((users) =>
-            users.map((user) => {
-              this.user = user;
-              return user;
-            })
-          )
-        )
+        .pipe(tap((user) => (this.user = user)))
         .subscribe()
     );
   }

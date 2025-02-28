@@ -76,8 +76,6 @@ export class GameComponent implements OnInit, OnDestroy {
   isDraggingOverTable = signal(false); // Флаг перетаскивания над столом
   showPlayerActionLabel = signal(false); // Показ метки действия игрока
   showComputerActionLabel = signal(false); // Показ метки действия компьютера
-  playerActionText = signal(''); // Текст действия игрока
-  computerActionText = signal(''); // Текст действия компьютера
   showGameEndModal = signal(false); // Показ модального окна окончания игры
 
   // Инициализация компонента
@@ -86,14 +84,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.userService
         .getUserInfo()
-        .pipe(
-          tap((users) =>
-            users.map((user) => {
-              this.user = user;
-              return user;
-            })
-          )
-        )
+        .pipe(tap((user) => (this.user = user)))
         .subscribe()
     );
     this.balance = Number(this.user.balance); // Установка начального баланса
@@ -374,8 +365,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.user.games += 1;
     this.user.earnings += 1;
     this.user.wins += 1;
-    this.userService.updateUserInfo([this.user]);
-    this.userService.saveInLocalStorage('user');
+    this.userService.updateUserInfo(this.user);
   }
 
   // Показ модального окна с блокировкой прокрутки
@@ -407,10 +397,8 @@ export class GameComponent implements OnInit, OnDestroy {
   ): void {
     if (type === 'player') {
       this.showPlayerActionLabel.set(true);
-      this.playerActionText.set(text);
     } else {
       this.showComputerActionLabel.set(true);
-      this.computerActionText.set(text);
     }
     setTimeout(() => {
       if (type === 'player') this.showPlayerActionLabel.set(false);

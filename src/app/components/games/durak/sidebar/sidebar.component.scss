@@ -1,7 +1,4 @@
 .sidebar {
-  position: absolute;
-  left: 20px;
-  top: 60px;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -23,13 +20,24 @@
   color: white;
 }
 .deck-card {
-  margin-bottom: 10px;
 }
 .trump-card {
+  left: 80px;
   position: absolute;
-  bottom: -20px;
-  left: 20px;
-  transform: rotate(-15deg);
+  transform: rotate(0deg);
+  bottom: 32px;
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  color: black;
 }
 .trump-suit-only {
   font-size: 48px;
@@ -82,6 +90,7 @@
   cursor: not-allowed;
 }
 .card {
+  z-index: 2;
   width: 80px;
   height: 120px;
   border-radius: 8px;
@@ -125,6 +134,441 @@
   align-self: flex-end;
   transform: rotate(180deg);
 }
+.suit {
+  font-size: 36px;
+  line-height: 1;
+}
+
+//media
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+
+  // Медиазапрос для экранов до 1400px
+  @media (max-width: 1400px) {
+    gap: 35px;
+
+    .turn-indicator {
+      font-size: 16px;
+      padding: 4px 8px;
+    }
+
+    .deck {
+      font-size: 14px;
+    }
+
+    .trump-card {
+      width: 70px;
+      height: 105px;
+      left: 70px;
+      bottom: 28px;
+      font-size: 16px;
+
+      .suit {
+        font-size: 32px;
+      }
+
+      .rank {
+        font-size: 16px;
+      }
+    }
+
+    .card {
+      width: 70px;
+      height: 105px;
+    }
+
+    .card.back::after {
+      font-size: 36px;
+    }
+
+    .trump-suit-only {
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .discard-pile {
+      font-size: 14px;
+      gap: 8px;
+    }
+
+    .discard-button,
+    .take-button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+
+  // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
+  @media (max-width: 1024px) {
+    gap: 30px;
+
+    .turn-indicator {
+      font-size: 14px;
+      padding: 4px 6px;
+    }
+
+    .deck {
+      font-size: 13px;
+    }
+
+    .trump-card {
+      width: 60px;
+      height: 90px;
+      left: 60px;
+      bottom: 24px;
+
+      .suit {
+        font-size: 28px;
+      }
+
+      .rank {
+        font-size: 14px;
+      }
+    }
+
+    .card {
+      width: 60px;
+      height: 90px;
+    }
+
+    .card.back::after {
+      font-size: 32px;
+    }
+
+    .trump-suit-only {
+      font-size: 36px;
+      margin-bottom: 6px;
+    }
+
+    .discard-pile {
+      font-size: 13px;
+      gap: 6px;
+    }
+
+    .discard-button,
+    .take-button {
+      padding: 7px 14px;
+      font-size: 13px;
+    }
+  }
+
+  // Медиазапрос для экранов до 768px (планшеты в портретной ориентации)
+  @media (max-width: 768px) {
+    gap: 25px;
+
+    .turn-indicator {
+      font-size: 13px;
+      padding: 3px 5px;
+    }
+
+    .deck {
+      font-size: 12px;
+    }
+
+    .trump-card {
+      width: 50px;
+      height: 75px;
+      left: 50px;
+      bottom: 20px;
+
+      .suit {
+        font-size: 24px;
+      }
+
+      .rank {
+        font-size: 12px;
+      }
+    }
+
+    .card {
+      width: 50px;
+      height: 75px;
+    }
+
+    .card.back::after {
+      font-size: 28px;
+    }
+
+    .trump-suit-only {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .discard-pile {
+      font-size: 12px;
+      gap: 5px;
+    }
+
+    .discard-button,
+    .take-button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  }
+
+  // Медиазапрос для экранов до 480px (мобильные устройства)
+  @media (max-width: 480px) {
+    gap: 20px;
+
+    .turn-indicator {
+      font-size: 12px;
+      padding: 3px 4px;
+    }
+
+    .deck {
+      font-size: 11px;
+    }
+
+    .trump-card {
+      width: 40px;
+      height: 60px;
+      left: 40px;
+      bottom: 16px;
+
+      .suit {
+        font-size: 20px;
+      }
+
+      .rank {
+        font-size: 10px;
+      }
+    }
+
+    .card {
+      width: 40px;
+      height: 60px;
+    }
+
+    .card.back::after {
+      font-size: 24px;
+    }
+
+    .trump-suit-only {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .discard-pile {
+      font-size: 11px;
+      gap: 4px;
+    }
+
+    .discard-button,
+    .take-button {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+  }
+
+  // Медиазапрос для экранов до 320px (очень маленькие устройства)
+  @media (max-width: 320px) {
+    gap: 15px;
+
+    .turn-indicator {
+      font-size: 11px;
+      padding: 2px 3px;
+    }
+
+    .deck {
+      font-size: 10px;
+    }
+
+    .trump-card {
+      width: 35px;
+      height: 52px;
+      left: 35px;
+      bottom: 12px;
+
+      .suit {
+        font-size: 18px;
+      }
+
+      .rank {
+        font-size: 9px;
+      }
+    }
+
+    .card {
+      width: 35px;
+      height: 52px;
+    }
+
+    .card.back::after {
+      font-size: 20px;
+    }
+
+    .trump-suit-only {
+      font-size: 24px;
+      margin-bottom: 3px;
+    }
+
+    .discard-pile {
+      font-size: 10px;
+      gap: 3px;
+    }
+
+    .discard-button,
+    .take-button {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+  }
+}
+
+// Базовые стили остаются без изменений
+.turn-indicator {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  background: #24004e;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.deck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
+.trump-card {
+  left: 80px;
+  position: absolute;
+  transform: rotate(0deg);
+  bottom: 32px;
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  color: black;
+}
+
+.trump-suit-only {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.trump-suit-only .suit.red {
+  color: #d32f2f;
+}
+
+.trump-suit-only .suit.black {
+  color: #212121;
+}
+
+.discard-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  gap: 10px;
+}
+
+.discard-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.discard-button:hover {
+  background: #b71c1c;
+}
+
+.discard-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.take-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.take-button:hover {
+  background: #f57c00;
+}
+
+.take-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.card {
+  z-index: 2;
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+
+.card.red {
+  color: #d32f2f;
+}
+
+.card.black {
+  color: #212121;
+}
+
+.card.back {
+  background: linear-gradient(45deg, #0288d1, #0277bd);
+  border: 2px solid #01579b;
+}
+
+.card.back::after {
+  content: "🎴";
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rank {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.rank.top {
+  align-self: flex-start;
+}
+
+.rank.bottom {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
 .suit {
   font-size: 36px;
   line-height: 1;

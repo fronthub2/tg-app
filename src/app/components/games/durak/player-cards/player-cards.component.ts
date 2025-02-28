@@ -26,8 +26,6 @@ import { ICard, IPlayer } from '../../../../interface/durak.game.interface';
 export class PlayerCardsComponent {
   @Input() player!: IPlayer;
   @Input() isComputer = false;
-  @Input() actionLabel = '';
-  @Input() showAction = false;
   @Output() dragStart = new EventEmitter<{ event: DragEvent; card: ICard }>(); // Обновляем тип эмиттера
   @Output() dragEnd = new EventEmitter<DragEvent>();
 

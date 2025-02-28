@@ -1,10 +1,9 @@
-import { NgClass } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ICard, IPlayer } from '../../../../interface/durak.game.interface';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgClass],
+  imports: [],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })

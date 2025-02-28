@@ -1,111 +1,133 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { IUser } from '../../../interface/user.interface';
+import { UserService } from '../../../services/user.service';
+import { Cell, MinesService } from '../../../services/mines.service';
 
-interface Cell {
-  isMine: boolean;
-  isRevealed: boolean;
-  neighboringMines: number;
+const enum GameState {
+  INITIAL = 'initial',
+  PLAYING = 'playing',
+  LOST = 'lost',
+  WON = 'won',
 }
+
+type Ratio = '0.2' | '0.5' | '1' | '1.5';
 
 @Component({
   selector: 'app-mines',
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './mines.component.html',
   styleUrl: './mines.component.scss',
 })
-export class MinesComponent {
-  rows: number = 10;
-  cols: number = 10;
-  mineCount: number = 15;
+export class MinesComponent implements OnInit, OnDestroy {
+  private subscription = new Subscription();
+  private userService = inject(UserService);
+  private gameService = inject(MinesService);
+
+  user!: IUser;
+  wins: number = 0;
+  stake: number = 0;
+  count: number = 0;
+  ratio: number = 0;
+
+  rows: number = 0;
+  cols: number = 0;
+  mineCount: number = 0;
   board: Cell[][] = [];
-
+  gameState: GameState = GameState.INITIAL;
   isShowButtonExit: boolean = false;
-  isPlay!: boolean;
-
-  constructor() {}
 
   ngOnInit(): void {
-    this.isPlay = true;
-    this.initializeBoard();
-    this.placeMines();
-    this.calculateNeighboringMines();
-  }
-
-  //Инициализация доски
-  initializeBoard() {
-    if (!this.isPlay) return;
-
-    this.isShowButtonExit = false;
-    this.board = Array.from({ length: this.rows }, () =>
-      Array.from({ length: this.cols }, () => ({
-        isMine: false,
-        isRevealed: false,
-        neighboringMines: 0,
-      }))
+    this.subscription.add(
+      this.userService.getUserInfo().subscribe({
+        next: (user) => {
+          this.user = user;
+          this.stake = this.userService.getStake();
+          this.ratio = this.userService.getRatio();
+          if (this.stake <= 0 || !this.ratio) {
+            console.error('Некорректные данные: ставка или коэффициент');
+            return;
+          }
+          this.startGame();
+        },
+        error: (err) => console.error('Ошибка загрузки пользователя:', err),
+      })
     );
   }
 
-  //Расположение мины
-  placeMines() {
-    if (!this.isPlay) return;
-
-    let minesPlaced = 0;
-    while (minesPlaced < this.mineCount) {
-      const row = Math.floor(Math.random() * this.rows);
-      const col = Math.floor(Math.random() * this.cols);
-      if (!this.board[row][col].isMine) {
-        this.board[row][col].isMine = true;
-        minesPlaced++;
-      }
-    }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
-  // Рассчитать соседние шахты
-  calculateNeighboringMines() {
-    if (!this.isPlay) return;
-
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
-        if (this.board[row][col].isMine) {
-          for (let r = row - 1; r <= row + 1; r++) {
-            for (let c = col - 1; c <= col + 1; c++) {
-              if (r >= 0 && r < this.rows && c >= 0 && c < this.cols) {
-                this.board[r][c].neighboringMines++;
-              }
-            }
-          }
-        }
-      }
-    }
+  startGame(): void {
+    const config = this.gameService.configureBoard(this.ratio);
+    this.rows = config.rows;
+    this.cols = config.cols;
+    this.mineCount = config.mineCount;
+    this.board = this.gameService.initializeBoard(this.rows, this.cols);
+    this.gameService.placeMines(
+      this.board,
+      this.mineCount,
+      this.rows,
+      this.cols
+    );
+    this.gameService.calculateNeighboringMines(
+      this.board,
+      this.rows,
+      this.cols
+    );
+    this.gameState = GameState.PLAYING;
+    this.wins = 0;
+    this.count = 0;
   }
 
-  // Открытие ячейки
-  revealCell(row: number, col: number) {
-    if (!this.isPlay) return;
+  revealCell(row: number, col: number): void {
+    if (this.gameState !== GameState.PLAYING) return;
 
-    if (this.board[row][col].isRevealed) return;
-
-    this.board[row][col].isRevealed = true;
-
-    if (this.board[row][col].isMine) {
-      console.log('Взрыв');
-      // alert('Вы проиграли');
-      // Перезапустите игру или обработайте логику завершения игры здесь
-      this.isPlay = false;
+    const hitMine = this.gameService.revealCell(
+      this.board,
+      row,
+      col,
+      this.rows,
+      this.cols
+    );
+    if (hitMine) {
+      this.gameState = GameState.LOST;
       this.isShowButtonExit = true;
-      this.initializeBoard();
-      this.placeMines();
-      this.calculateNeighboringMines();
-    } else if (this.board[row][col].neighboringMines === 0) {
-      // Если соседних мин нет, раскройте окружающие клетки
-      for (let r = row - 1; r <= row + 1; r++) {
-        for (let c = col - 1; c <= col + 1; c++) {
-          if (r >= 0 && r < this.rows && c >= 0 && c < this.cols) {
-            this.revealCell(r, c);
-          }
-        }
-      }
+      this.wins = 0;
+      return;
     }
+
+    this.count++;
+    this.calculateWins();
+
+    if (
+      this.gameService.checkWin(
+        this.board,
+        this.rows,
+        this.cols,
+        this.mineCount
+      )
+    ) {
+      this.gameState = GameState.WON;
+      this.setWinsCash();
+    }
+  }
+
+  calculateWins(): void {
+    this.wins = (this.stake + this.count) * this.ratio;
+  }
+
+  setWinsCash(): void {
+    if (this.wins > 0) {
+      this.user.balance += this.wins;
+      this.userService.updateUserInfo(this.user);
+    }
+  }
+
+  restartGame(): void {
+    this.startGame();
   }
 }

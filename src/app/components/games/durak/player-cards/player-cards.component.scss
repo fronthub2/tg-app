@@ -1,21 +1,262 @@
+// .player {
+//   position: relative;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+// .player-computer {
+//   margin-top: 20px;
+// }
+// .player-human {
+//   max-width: 790px;
+//   width: 100%;
+// }
+// .cards {
+//   display: flex;
+//   gap: 10px;
+//   flex-wrap: wrap;
+//   justify-content: center;
+// }
+// .card {
+//   width: 80px;
+//   height: 120px;
+//   border-radius: 8px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+//   background: white;
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   align-items: center;
+//   padding: 5px;
+//   font-family: Arial, sans-serif;
+//   transition: transform 0.1s ease, opacity 0.2s;
+// }
+// .card.red {
+//   color: #d32f2f;
+// }
+// .card.black {
+//   color: #212121;
+// }
+// .card.back {
+//   background: linear-gradient(45deg, #0288d1, #0277bd);
+//   border: 2px solid #01579b;
+// }
+// .card.back::after {
+//   content: "🎴";
+//   font-size: 40px;
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+// }
+// .card[draggable="true"]:hover {
+//   transform: scale(1.05);
+// }
+// .card[draggable="true"]:active {
+//   opacity: 0.7;
+//   cursor: grabbing;
+// }
+// .card[draggable="false"] {
+//   cursor: not-allowed;
+//   opacity: 0.8;
+// }
+// .rank {
+//   font-size: 18px;
+//   font-weight: bold;
+// }
+// .rank.top {
+//   align-self: flex-start;
+// }
+// .rank.bottom {
+//   align-self: flex-end;
+//   transform: rotate(180deg);
+// }
+// .suit {
+//   font-size: 36px;
+//   line-height: 1;
+// }
+
 .player {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  // Медиазапрос для экранов до 1400px
+  @media (max-width: 1400px) {
+    .player-human {
+      max-width: 700px;
+    }
+
+    .cards {
+      gap: 8px;
+    }
+
+    .card {
+      width: 70px;
+      height: 105px;
+
+      .suit {
+        font-size: 32px;
+      }
+
+      .rank {
+        font-size: 16px;
+      }
+    }
+
+    .card.back::after {
+      font-size: 36px;
+    }
+  }
+
+  // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
+  @media (max-width: 1024px) {
+    .player-human {
+      max-width: 600px;
+    }
+
+    .player-computer {
+      margin-top: 15px;
+    }
+
+    .cards {
+      gap: 6px;
+    }
+
+    .card {
+      width: 60px;
+      height: 90px;
+
+      .suit {
+        font-size: 28px;
+      }
+
+      .rank {
+        font-size: 14px;
+      }
+    }
+
+    .card.back::after {
+      font-size: 32px;
+    }
+  }
+
+  // Медиазапрос для экранов до 768px (планшеты в портретной ориентации)
+  @media (max-width: 768px) {
+    .player-human {
+      max-width: 90%; // Переход на процентную ширину
+    }
+
+    .player-computer {
+      margin-top: 10px;
+    }
+
+    .cards {
+      gap: 5px;
+    }
+
+    .card {
+      width: 50px;
+      height: 75px;
+
+      .suit {
+        font-size: 24px;
+      }
+
+      .rank {
+        font-size: 12px;
+      }
+    }
+
+    .card.back::after {
+      font-size: 28px;
+    }
+  }
+
+  // Медиазапрос для экранов до 480px (мобильные устройства)
+  @media (max-width: 480px) {
+    .player-human {
+      max-width: 95%;
+    }
+
+    .player-computer {
+      margin-top: 8px;
+    }
+
+    .cards {
+      gap: 4px;
+    }
+
+    .card {
+      width: 40px;
+      height: 60px;
+
+      .suit {
+        font-size: 20px;
+      }
+
+      .rank {
+        font-size: 10px;
+      }
+    }
+
+    .card.back::after {
+      font-size: 24px;
+    }
+  }
+
+  // Медиазапрос для экранов до 320px (очень маленькие устройства)
+  @media (max-width: 320px) {
+    .player-human {
+      max-width: 100%;
+    }
+
+    .player-computer {
+      margin-top: 5px;
+    }
+
+    .cards {
+      gap: 3px;
+    }
+
+    .card {
+      width: 35px;
+      height: 52px;
+
+      .suit {
+        font-size: 18px;
+      }
+
+      .rank {
+        font-size: 9px;
+      }
+    }
+
+    .card.back::after {
+      font-size: 20px;
+    }
+  }
 }
+
+// Базовые стили остаются без изменений
 .player-computer {
   margin-top: 20px;
 }
+
 .player-human {
-  margin-bottom: 20px;
+  max-width: 790px;
+  width: 100%;
 }
+
 .cards {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .card {
   width: 80px;
   height: 120px;
@@ -31,16 +272,20 @@
   font-family: Arial, sans-serif;
   transition: transform 0.1s ease, opacity 0.2s;
 }
+
 .card.red {
   color: #d32f2f;
 }
+
 .card.black {
   color: #212121;
 }
+
 .card.back {
   background: linear-gradient(45deg, #0288d1, #0277bd);
   border: 2px solid #01579b;
 }
+
 .card.back::after {
   content: "🎴";
   font-size: 40px;
@@ -49,41 +294,36 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 .card[draggable="true"]:hover {
   transform: scale(1.05);
 }
+
 .card[draggable="true"]:active {
   opacity: 0.7;
   cursor: grabbing;
 }
+
 .card[draggable="false"] {
   cursor: not-allowed;
   opacity: 0.8;
 }
+
 .rank {
   font-size: 18px;
   font-weight: bold;
 }
+
 .rank.top {
   align-self: flex-start;
 }
+
 .rank.bottom {
   align-self: flex-end;
   transform: rotate(180deg);
 }
+
 .suit {
   font-size: 36px;
   line-height: 1;
-}
-.action-label {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.8);
-  color: #333;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 20px;
-  font-weight: bold;
 }

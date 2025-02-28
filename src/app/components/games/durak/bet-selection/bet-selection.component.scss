@@ -1,10 +1,141 @@
+// .bet-selection {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 20px;
+//   color: white;
+// }
+// .deck-size-select {
+//   padding: 10px;
+//   font-size: 18px;
+//   background: #c000ff;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
+// }
+// .deck-size-select:hover {
+//   background: #a000d0;
+// }
+// .bet-button {
+//   padding: 15px 30px;
+//   font-size: 20px;
+//   background: #c000ff;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
+// }
 .bet-selection {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   color: white;
+
+  // Медиазапрос для экранов до 1400px
+  @media (max-width: 1400px) {
+    gap: 18px;
+
+    h2 {
+      font-size: 22px;
+    }
+
+    .deck-size-select {
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    .bet-button {
+      padding: 12px 25px;
+      font-size: 18px;
+    }
+  }
+
+  // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
+  @media (max-width: 1024px) {
+    gap: 15px;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    .deck-size-select {
+      padding: 7px;
+      font-size: 15px;
+    }
+
+    .bet-button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  }
+
+  // Медиазапрос для экранов до 768px (планшеты в портретной ориентации)
+  @media (max-width: 768px) {
+    gap: 12px;
+
+    h2 {
+      font-size: 18px;
+    }
+
+    .deck-size-select {
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    .bet-button {
+      padding: 8px 18px;
+      font-size: 15px;
+    }
+  }
+
+  // Медиазапрос для экранов до 480px (мобильные устройства)
+  @media (max-width: 480px) {
+    gap: 10px;
+
+    h2 {
+      font-size: 16px;
+    }
+
+    .deck-size-select {
+      padding: 5px;
+      font-size: 13px;
+      width: 100%; // Полная ширина для удобства на мобильных
+      max-width: 200px;
+    }
+
+    .bet-button {
+      padding: 7px 15px;
+      font-size: 14px;
+      width: 100%; // Полная ширина кнопок
+      max-width: 120px;
+    }
+  }
+
+  // Медиазапрос для экранов до 320px (очень маленькие устройства)
+  @media (max-width: 320px) {
+    gap: 8px;
+
+    h2 {
+      font-size: 14px;
+    }
+
+    .deck-size-select {
+      padding: 4px;
+      font-size: 12px;
+      max-width: 180px;
+    }
+
+    .bet-button {
+      padding: 6px 12px;
+      font-size: 13px;
+      max-width: 100px;
+    }
+  }
 }
+
+// Базовые стили остаются без изменений
 .deck-size-select {
   padding: 10px;
   font-size: 18px;
@@ -14,9 +145,11 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .deck-size-select:hover {
   background: #a000d0;
 }
+
 .bet-button {
   padding: 15px 30px;
   font-size: 20px;
