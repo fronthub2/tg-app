@@ -1,112 +1,12 @@
-<!-- <div class="game-container">
-  <div class="balance">Баланс: {{ balance.toFixed(2) }}</div>
-
-  @if (!gameStarted() && !showGameEndModal()) {
-  <app-bet-selection
-    [balance]="balance"
-    (startGame)="startGameWithBet($event)"
-  ></app-bet-selection>
-  } @else {
-  <div class="gameplay">
-    @if (human()) {
-    <app-sidebar
-      [human]="human()!"
-      [deckCount]="getDeckCount()"
-      [trumpCard]="getTrumpCard()"
-      [discardPile]="getDiscardPile()"
-      (endTurn)="endTurn()"
-      (takeCards)="takeCardsToHand()"
-      [canEndTurn]="canEndTurn()"
-    ></app-sidebar>
-    } @if (computer()) {
-    <app-player-cards
-      [player]="computer()!"
-      [isComputer]="true"
-      [actionLabel]="computerActionText()"
-      [showAction]="showComputerActionLabel()"
-    ></app-player-cards>
-    }
-
-    <div
-      class="table"
-      [class.dropzone-active]="isDragging() && isDraggingOverTable()"
-      (dragover)="onDragOverTable($event)"
-      (drop)="onDropTable($event)"
-      (dragenter)="onDragEnterTable($event)"
-      (dragleave)="onDragLeaveTable($event)"
-    >
-      @for (pair of table(); track pair.attack) {
-      <div class="card-pair" [@cardMove]>
-        <div class="card attack" [ngClass]="getCardClasses(pair.attack)">
-          <span class="rank top">{{ pair.attack.rank }}</span>
-          <span class="suit">{{ getSuitSymbol(pair.attack.suit) }}</span>
-          <span class="rank bottom">{{ pair.attack.rank }}</span>
-        </div>
-        @if (pair.defend) {
-        <div
-          class="card defend"
-          [ngClass]="getCardClasses(pair.defend)"
-          [@cardDefend]
-        >
-          <span class="rank top">{{ pair.defend.rank }}</span>
-          <span class="suit">{{ getSuitSymbol(pair.defend.suit) }}</span>
-          <span class="rank bottom">{{ pair.defend.rank }}</span>
-        </div>
-        }
-      </div>
-      }
-    </div>
-
-    @if (human()) {
-    <app-player-cards
-      [player]="human()!"
-      [isComputer]="false"
-      [actionLabel]="playerActionText()"
-      [showAction]="showPlayerActionLabel()"
-      (dragStart)="onDragStart($event.event, $event.card)"
-      (dragEnd)="onDragEnd($event)"
-    ></app-player-cards>
-    }
-  </div>
-  } @if (showGameEndModal()) {
-  <div class="game-end-modal" (click)="closeGameEndModalOnBackdrop($event)">
-    <div class="modal-content">
-      <h2>{{ gameResult() }}</h2>
-      <button class="modal-button" (click)="resetGame()">Новая игра</button>
-    </div>
-  </div>
-  } @if (gameStarted() && !showGameEndModal()) {
-  <button class="exit-button" (click)="exitGame()">ВЫЙТИ</button>
-  }
-
-
-  @if (showModal()) {
-    <div class="modal" (click)="closeModalOnBackdrop($event)">
-      <div class="modal-content">
-        <h3>Недостаточно средств</h3>
-        <p>
-          Ваш баланс: {{ balance.toFixed(2) }}. Ставка:
-          {{ currentBet().toFixed(2) }}
-        </p>
-        <p>Пополните счет:</p>
-        <button class="modal-button" (click)="topUpBalance(5)">+5.00</button>
-        <button class="modal-button" (click)="topUpBalance(10)">+10.00</button>
-        <button class="modal-button" (click)="topUpBalance(20)">+20.00</button>
-        <button class="modal-button cancel" (click)="closeModal()">Отмена</button>
-      </div>
-    </div>
-    } 
-</div> -->
-
 <div class="board-info">
-  <div class="balance">Баланс: {{ balance.toFixed(2) }}</div>
+  <div class="balance">Баланс: {{ user.balance }}</div>
   @if (gameStarted() && !showGameEndModal()) {
   <button class="exit-button" (click)="exitGame()">ВЫЙТИ</button>
   }
 </div>
 @if (!gameStarted() && !showGameEndModal()) {
 <app-bet-selection
-  [balance]="balance"
+  [balance]="user.balance"
   (startGame)="startGameWithBet($event)"
 ></app-bet-selection>
 } @else {
@@ -170,4 +70,10 @@
     }
   </div>
 </div>
+} @if (isShowModalCashIn()) {
+<app-modal></app-modal>
+}
+
+@if (isShowModalEndGame()) {
+  <app-modal-end-game [text]="gameResult()"></app-modal-end-game>
 }

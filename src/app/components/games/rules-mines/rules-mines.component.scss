@@ -87,7 +87,7 @@ $transition-speed: 0.3s; // Скорость анимации
         border-radius: 8px;
         outline: none;
         transition: border-color $transition-speed ease,
-          box-shadow $transition-speed ease;
+        box-shadow $transition-speed ease;
 
         &::placeholder {
           color: #6c757d;
@@ -139,46 +139,6 @@ $transition-speed: 0.3s; // Скорость анимации
 :host {
   display: flex;
   justify-content: center;
-
-  // Медиазапрос для экранов до 1400px
-  @media (max-width: 1400px) {
-    .wrapper {
-      width: 600px;
-      height: 450px;
-      gap: 60px;
-    }
-
-    .game {
-      &__title {
-        font-size: 32px;
-      }
-
-      &__content {
-        font-size: 20px;
-        gap: 18px;
-      }
-
-      &__stake {
-        font-size: 20px;
-        gap: 18px;
-
-        &-input {
-          padding: 10px 12px;
-          font-size: 15px;
-        }
-      }
-
-      &__ratio {
-        font-size: 20px;
-        gap: 18px;
-      }
-
-      &__multiplier {
-        padding: 10px 12px;
-        font-size: 15px;
-      }
-    }
-  }
 
   // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
   @media (max-width: 1024px) {

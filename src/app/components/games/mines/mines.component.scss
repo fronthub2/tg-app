@@ -8,6 +8,7 @@
   display: grid;
   grid-template-columns: repeat(10, 40px);
   justify-content: center;
+  margin: 20px 0;
 }
 
 .cell {
@@ -55,34 +56,6 @@
   flex-direction: column;
   gap: 20px;
 
-  // Медиазапрос для экранов до 1400px
-  @media (max-width: 1400px) {
-    gap: 18px;
-
-    .title {
-      font-size: 32px;
-      margin: 18px 0;
-    }
-
-    .wins {
-      font-size: 20px;
-    }
-
-    .board {
-      grid-template-columns: repeat(10, 35px); // Уменьшаем размер ячеек
-    }
-
-    .cell {
-      width: 35px;
-      height: 35px;
-    }
-
-    .link {
-      max-width: 170px;
-      padding: 8px 12px;
-    }
-  }
-
   // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
   @media (max-width: 1024px) {
     gap: 15px;
@@ -117,16 +90,15 @@
     gap: 12px;
 
     .title {
-      font-size: 24px;
       margin: 12px 0;
     }
 
     .wins {
-      font-size: 16px;
+      font-size: 20px;
     }
 
     .board {
-      grid-template-columns: repeat(8, 35px); // Уменьшаем количество колонок
+      grid-template-columns: repeat(10, 35px); // Уменьшаем количество колонок
       justify-content: center;
     }
 
@@ -139,6 +111,7 @@
     .link {
       max-width: 140px;
       padding: 7px 10px;
+      font-size: 18px;
     }
   }
 
@@ -157,8 +130,8 @@
 
     .board {
       grid-template-columns: repeat(
-        6,
-        30px
+        10,
+        32px
       ); // Еще меньше колонок для мобильных
       justify-content: center;
     }

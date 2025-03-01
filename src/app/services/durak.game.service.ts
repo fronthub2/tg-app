@@ -68,7 +68,7 @@ export class DurakGameService {
   dealCards(): [IPlayer, IPlayer] {
     const player1 = { hand: this.deck.splice(0, 6), isAttacking: true }; // Первый игрок атакует
     const player2 = { hand: this.deck.splice(0, 6), isAttacking: false }; // Второй игрок защищается
-    console.log([player1, player2])
+    console.log([player1, player2]);
     return [player1, player2]; // Возвращаем кортеж игроков
   }
 
@@ -123,21 +123,23 @@ export class DurakGameService {
     table: { attack: ICard; defend?: ICard }[]
   ): boolean {
     if (table.length === 0) return true; // Если стол пуст, можно атаковать
+
     // Собираем ранги всех карт на столе (атака и защита)
     const tableRanks = table.flatMap((pair) =>
       [pair.attack.rank, pair.defend?.rank].filter(Boolean)
     );
+
     // Проверяем, есть ли в руке игрока карта с рангом, уже присутствующим на столе
     const hasMatchingRank = player.hand.some((card) =>
       tableRanks.includes(card.rank)
     );
 
     // До первого отбоя лимит — 3 карты, после — зависит от количества карт у оппонента
-    console.log('isFirstTurn', this.isFirstTurnCompleted);
     const maxAttacks = this.isFirstTurnCompleted
-      ? opponent.hand.length || player.hand.length
+      ? Math.min(opponent.hand.length, 6) // Лимит — минимум между картами оппонента и 6
       : 3;
-    return hasMatchingRank && table.length < maxAttacks; // Возвращаем, можно ли атаковать дальше
+
+    return hasMatchingRank && table.length < maxAttacks;
   }
 
   // Завершает ход, отправляя все карты со стола в отбой

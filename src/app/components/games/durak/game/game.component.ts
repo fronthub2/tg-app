@@ -11,7 +11,9 @@ import {
 import { IUser } from '../../../../interface/user.interface';
 import { DurakGameService } from '../../../../services/durak.game.service';
 import { UserService } from '../../../../services/user.service';
+import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { BetSelectionComponent } from '../bet-selection/bet-selection.component';
+import { ModalEndGameComponent } from '../modal-end-game/modal-end-game.component';
 import { PlayerCardsComponent } from '../player-cards/player-cards.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
@@ -24,6 +26,8 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     PlayerCardsComponent,
     SidebarComponent,
     BetSelectionComponent,
+    ModalComponent,
+    ModalEndGameComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
@@ -60,7 +64,11 @@ export class GameComponent implements OnInit, OnDestroy {
   private gameService = inject(DurakGameService);
   private userService = inject(UserService);
   private subscription = new Subscription(); // Для управления подписками
-  user!: IUser; // Информация о пользователе
+
+  // user$!: Observable<IUser>; // Информация о пользователе
+  user!: IUser;
+  isShowModalCashIn = signal(false); // Показ модального окна для пополнения баланса
+  isShowModalEndGame = signal(false);
 
   // Реактивные сигналы для состояния игры
   human = signal<IPlayer | undefined>(undefined); // Игрок-человек
@@ -69,9 +77,7 @@ export class GameComponent implements OnInit, OnDestroy {
   gameStarted = signal(false); // Флаг начала игры
   gameResult = signal(''); // Результат игры
   canEndTurn = signal(false); // Возможность завершить ход
-  balance: number = 0; // Баланс игрока
   currentBet = signal(0); // Текущая ставка
-  showModal = signal(false); // Показ модального окна для пополнения баланса
   isDragging = signal(false); // Флаг перетаскивания карты
   isDraggingOverTable = signal(false); // Флаг перетаскивания над столом
   showPlayerActionLabel = signal(false); // Показ метки действия игрока
@@ -87,7 +93,6 @@ export class GameComponent implements OnInit, OnDestroy {
         .pipe(tap((user) => (this.user = user)))
         .subscribe()
     );
-    this.balance = Number(this.user.balance); // Установка начального баланса
   }
 
   // Очистка подписок при уничтожении компонента
@@ -134,8 +139,12 @@ export class GameComponent implements OnInit, OnDestroy {
     deckSize: DeckSize;
   }): void {
     this.currentBet.set(bet);
-    if (this.balance < bet) return this.showModalWithScrollLock(); // Проверка баланса
-    this.balance -= bet; // Списание ставки
+    if (this.user.balance < bet) {
+      this.isShowModalCashIn.set(true);
+      return;
+    } // Проверка баланса
+
+    this.user.balance -= bet; // Списание ставки
     this.gameService.initializeDeck(deckSize); // Инициализация колоды
     const [human, computer] = this.gameService.dealCards(); // Раздача карт
     this.human.set(human);
@@ -145,44 +154,43 @@ export class GameComponent implements OnInit, OnDestroy {
     this.showGameEndModal.set(false);
     this.gameResult.set('');
     this.canEndTurn.set(false);
+    this.userService.updateUserInfo(this.user);
     if (!human.isAttacking) this.delayedComputerAttack(); // Компьютер начинает, если игрок не атакует
   }
 
   // Пополнение баланса
-  topUpBalance(amount: number): void {
-    this.balance += amount;
-    this.closeModal();
-    if (this.balance >= this.currentBet())
-      this.startGameWithBet({ bet: this.currentBet(), deckSize: '36' }); // Перезапуск игры с дефолтной колодой
-  }
+  // topUpBalance(amount: number): void {
+  //   this.balance += amount;
+  //   this.closeModal();
+  //   if (this.balance >= this.currentBet())
+  //     this.startGameWithBet({ bet: this.currentBet(), deckSize: '36' }); // Перезапуск игры с дефолтной колодой
+  // }
 
   // Закрытие модального окна
-  closeModal(): void {
-    this.showModal.set(false);
-    this.enableScroll();
-    this.currentBet.set(0);
-  }
+  // closeModal(): void {
+  //   this.showModal.set(false);
+  //   this.currentBet.set(0);
+  // }
 
   // Закрытие модального окна при клике на фон
-  closeModalOnBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.closeModal();
-  }
+  // closeModalOnBackdrop(event: MouseEvent): void {
+  //   if (event.target === event.currentTarget) this.closeModal();
+  // }
 
   // Сброс игры
   resetGame(): void {
     this.gameStarted.set(false);
-    this.showGameEndModal.set(false);
-    this.enableScroll();
+    this.isShowModalCashIn.set(false);
     this.gameResult.set('');
     this.currentBet.set(0);
     this.showPlayerActionLabel.set(false);
     this.showComputerActionLabel.set(false);
   }
 
-  // Закрытие модального окна окончания игры при клике на фон
-  closeGameEndModalOnBackdrop(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.resetGame();
-  }
+  // // Закрытие модального окна окончания игры при клике на фон
+  // closeGameEndModalOnBackdrop(event: MouseEvent): void {
+  //   if (event.target === event.currentTarget) this.resetGame();
+  // }
 
   // Выход из игры
   exitGame(): void {
@@ -196,11 +204,18 @@ export class GameComponent implements OnInit, OnDestroy {
   // Проверка возможности перетаскивания карты игроком
   canPlayerDrag(): boolean {
     const human = this.human();
-    return human
-      ? human.isAttacking ||
-          (this.table().length > 0 &&
-            !this.table()[this.table().length - 1].defend)
-      : false;
+    if (human) {
+      console.log('true');
+
+      return (
+        human.isAttacking ||
+        (this.table().length > 0 &&
+          !this.table()[this.table().length - 1].defend)
+      );
+    } else {
+      console.log('false');
+      return false;
+    }
   }
 
   // Начало перетаскивания карты
@@ -229,6 +244,7 @@ export class GameComponent implements OnInit, OnDestroy {
     if (this.canPlayerDrag()) this.isDraggingOverTable.set(true);
   }
 
+  //оставить на столе
   onDragLeaveTable(event: DragEvent): void {
     this.isDraggingOverTable.set(false);
   }
@@ -256,11 +272,11 @@ export class GameComponent implements OnInit, OnDestroy {
       if (
         !this.gameService.canAttackMore(human, this.computer()!, this.table())
       )
-        return;
+        return; // Здесь проверяется возможность атаки
       this.table.update((t) => [...t, { attack: cardInHand }]);
       human.hand = human.hand.filter((c) => c !== cardInHand);
       this.canEndTurn.set(false);
-      setTimeout(() => this.computerDefend(), 1000); // Компьютер защищается
+      setTimeout(() => this.computerDefend(), 1000);
     } else if (
       this.table().length > 0 &&
       !this.table()[this.table().length - 1].defend
@@ -347,31 +363,34 @@ export class GameComponent implements OnInit, OnDestroy {
     );
     if (!result) return;
     setTimeout(() => {
-      this.gameResult.set(
-        result === 'human'
-          ? 'Вы победили!' + ((this.user.balance += this.currentBet() * 2), '')
-          : 'Вы проиграли!'
-      );
-      if (this.balance <= 0) {
+      if (result === 'human') {
+        this.gameResult.set('Вы победили!');
+        this.user.balance += this.currentBet() * 2;
+      } else {
+        this.gameResult.set('Вы проиграли!');
+        this.user.balance -= this.currentBet();
+      }
+
+      this.userService.updateUserInfo(this.user);
+      this.isShowModalEndGame.set(true);
+      setTimeout(() => {
+        this.resetGame();
+        this.isShowModalEndGame.set(false);
+      }, 3000);
+
+      if (this.user.balance <= 0) {
         this.gameResult.update((r) => r + ' Пополните кошелек');
         this.showGameEndModal.set(true);
-        this.disableScroll();
       }
     }, 1000);
   }
 
   private resultWin() {
-    this.user.balance += this.currentBet() * 2;
-    this.user.games += 1;
-    this.user.earnings += 1;
-    this.user.wins += 1;
-    this.userService.updateUserInfo(this.user);
-  }
-
-  // Показ модального окна с блокировкой прокрутки
-  private showModalWithScrollLock(): void {
-    this.showModal.set(true);
-    this.disableScroll();
+    // this.user.balance += this.currentBet() * 2;
+    // this.user.games += 1;
+    // this.user.earnings += 1;
+    // this.user.wins += 1;
+    // this.userService.updateUserInfo(this.user);
   }
 
   // Переключение хода на компьютер
@@ -438,21 +457,10 @@ export class GameComponent implements OnInit, OnDestroy {
     this.canEndTurn.set(false);
     this.gameService.refillHand(this.human()!);
     this.gameService.refillHand(this.computer()!);
-    this.showAction('Отбой', 'computer', this.checkGameEnd.bind(this));
   }
 
   // Задержка атаки компьютера
   private delayedComputerAttack(): void {
     setTimeout(() => this.computerAttack(), 1000);
-  }
-
-  // Блокировка прокрутки страницы
-  private disableScroll(): void {
-    document.body.classList.add('no-scroll');
-  }
-
-  // Разблокировка прокрутки страницы
-  private enableScroll(): void {
-    document.body.classList.remove('no-scroll');
   }
 }

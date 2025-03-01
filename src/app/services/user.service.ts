@@ -22,6 +22,7 @@ export class UserService {
   constructor() {}
 
   getUserInfo(): Observable<IUser> {
+    //будем запрашивать через api
     return this.userBSubject.asObservable();
   }
 

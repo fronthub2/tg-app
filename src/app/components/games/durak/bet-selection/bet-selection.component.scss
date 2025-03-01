@@ -33,25 +33,6 @@
   gap: 20px;
   color: white;
 
-  // Медиазапрос для экранов до 1400px
-  @media (max-width: 1400px) {
-    gap: 18px;
-
-    h2 {
-      font-size: 22px;
-    }
-
-    .deck-size-select {
-      padding: 8px;
-      font-size: 16px;
-    }
-
-    .bet-button {
-      padding: 12px 25px;
-      font-size: 18px;
-    }
-  }
-
   // Медиазапрос для экранов до 1024px (планшеты и небольшие ноутбуки)
   @media (max-width: 1024px) {
     gap: 15px;
@@ -137,17 +118,42 @@
 
 // Базовые стили остаются без изменений
 .deck-size-select {
-  padding: 10px;
-  font-size: 18px;
-  background: #c000ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+  max-width: 270px;
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 16px;
+  color: #333;
+  background-color: #ffffff;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  outline: none;
+  appearance: none; // Убираем стандартную стрелку
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); // Кастомная стрелка
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px;
+  transition: border-color 300ms ease, box-shadow 300ms ease;
 
-.deck-size-select:hover {
-  background: #a000d0;
+  &:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(#0056b3, 0.3);
+  }
+
+  // Наведение
+  &:hover:not(:focus) {
+    border-color: darken(#ced4da, 10%);
+    background-color: #f8f9fa;
+  }
+
+  option {
+    padding: 10px;
+    background-color: #ffffff;
+    color: #333;
+
+    &:hover {
+      background-color: #3d0072;
+    }
+  }
 }
 
 .bet-button {
